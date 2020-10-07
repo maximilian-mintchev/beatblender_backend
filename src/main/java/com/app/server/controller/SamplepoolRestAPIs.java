@@ -137,18 +137,12 @@ public class SamplepoolRestAPIs {
                     );
                     i++;
                 }
-
             } else {
                 System.out.println("Sorry, no samples found");
             }
-
-
-
             System.out.println("Successfull Search");
         }
-
         return ResponseEntity.ok(new AudioFileResponse(audioFileArray));
-
     }
 
     @PostMapping("/public/uploadSampleData")
@@ -692,7 +686,7 @@ public class SamplepoolRestAPIs {
         }
 
         List<String> artistNames = new ArrayList<String>(Arrays.asList("Aragorn", "Legolas", "Gimmly", "Samwise Gamgee","Bilbo", "Eomer", "Faramir"));
-        List<String> titles = new ArrayList<String>(Arrays.asList("Streichen", "Elben sind doch alle G", "Kot an Elben abstreichen", "Elbenbrot dick snacken", "Übelster Meisterdieb sein", "Vater mal wieder unnais unterwegs", "Kack Denethor"));
+        List<String> titles = new ArrayList<String>(Arrays.asList("They call me Streicher", "Friendship", "Der zählt trotzdem bloß als einer", "Yum Yum Lembas", "Legends never die", "And Rohan will answer", "Heart full of Pride"));
         List<String> audioFileName = new ArrayList<String>(Arrays.asList("s1.mp3", "s3.mp3", "s4.mp3", "s5.mp3", "s6.mp3", "s7.mp3", "s9.mp3"));
         List<String> imageNames = new ArrayList<String>(Arrays.asList("m17.jpg","m44.jpg","m8.jpg","m10.jpg","m41.jpg","m13.jpg","m44.jpg"));
         List<String> audioDownLoadUri = new ArrayList<String>(Arrays.asList(
