@@ -6,6 +6,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AudioFileRepository extends JpaRepository<AudioFile, Long> {
-
-
 }

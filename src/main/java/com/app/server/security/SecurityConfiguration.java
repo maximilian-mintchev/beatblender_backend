@@ -93,19 +93,19 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 //                  	antMatchers("/api/**").permitAll();
 
         http.
-//        	cors().and().csrf().disable().
+                //to-do: post req only works with corst disabled
+cors().and().csrf().disable().
         authorizeRequests().
 //            .antMatchers("/api/samplepool/public").permitAll()
-        antMatchers("/api/samplepool/downloadFile/**").permitAll()
-                .anyRequest().authenticated()
-//            .and().oauth2Client()
-//           .and().oauth2Login()
+        /*antMatchers("/api/samplepool/downloadFile/**").permitAll()*/
+        antMatchers("/api/samplepool/**").permitAll();
+                /*.anyRequest().authenticated()
                 .and()
-                .oauth2ResourceServer().jwt();
+                .oauth2ResourceServer().jwt();*/
 
-        http.cors();
+        /*http.cors();*/
 
-        Okta.configureResourceServer401ResponseBody(http);
+        /*Okta.configureResourceServer401ResponseBody(http);*/
 //
     }
 }

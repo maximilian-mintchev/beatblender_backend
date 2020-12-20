@@ -121,6 +121,7 @@ public class SamplepoolRestAPIs {
 //                    sample.getSampleImagePath(), fileStorageService.loadFileAsResource(sample.getAudioFilePath(), sample.getBasicUser().getBasicUserName()), fileStorageService.loadFileAsResource(sample.getSampleImagePath(), sample.getBasicUser().getBasicUserName()));
 
                     audioFileArray[i] = new FileResponse(
+                            i,
                             sample.getBasicUser().getBasicUserName(),
                             sample.getArtistName(), sample.getSampleTitle(),
                             sample.getAudioFilePath(),
@@ -284,6 +285,7 @@ public class SamplepoolRestAPIs {
             logger.info("Sample ID:" + sample.getId());
 
             audioFileArray[i] = new FileResponse(
+                    i,
                     sample.getBasicUser().getBasicUserName(),
                     sample.getArtistName(), sample.getSampleTitle(),
                     sample.getAudioFilePath(),
@@ -351,14 +353,14 @@ public class SamplepoolRestAPIs {
 
 
 */
-        String downloaderID = client.getUser(user.getName()).getId();
+        /*String downloaderID = client.getUser(user.getName()).getId();
         Optional<BasicUser> downloader = basicUserRepository.findByBasicUserName(downloaderID);
         if(downloader.isPresent()) {
             BasicUser myUser = downloader.get();
             myUser.increaseLicensePoints();
             basicUserRepository.save(myUser);
             System.out.println(myUser.getLicensePoints());
-        }
+        }*/
 
         List<Long> mySampleIds = Arrays.asList(sampleIds);
         Optional<List<Sample>> optionalSamples = this.sampleRepository.findAllBySampleId(mySampleIds);
@@ -375,6 +377,7 @@ public class SamplepoolRestAPIs {
 //                    sample.getAudioFilePath(),
 //                    sample.getSampleImagePath(), fileStorageService.loadFileAsResource(sample.getAudioFilePath(), sample.getBasicUser().getBasicUserName()), fileStorageService.loadFileAsResource(sample.getSampleImagePath(), sample.getBasicUser().getBasicUserName()));
                 audioFileArray[i] = new FileResponse(
+                        i,
                         sample.getBasicUser().getBasicUserName(),
                         sample.getArtistName(), sample.getSampleTitle(),
                         sample.getAudioFilePath(),
@@ -408,6 +411,7 @@ public class SamplepoolRestAPIs {
             querySample = filteredSample.get();
             FileResponse[] audioFileArray = new FileResponse[1];
             audioFileArray[0] = new FileResponse(
+                    0,
                     querySample.getBasicUser().getBasicUserName(),
                     querySample.getArtistName(), querySample.getSampleTitle(),
                     querySample.getAudioFilePath(),

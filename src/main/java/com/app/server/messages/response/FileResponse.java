@@ -2,7 +2,7 @@ package com.app.server.messages.response;
 
 public class FileResponse {
 
-
+    private int queuePosition;
     private String id;
     private String artistName;
     private String sampleTitle;
@@ -45,7 +45,8 @@ public class FileResponse {
         this.imageDownLoadUri = imageDownLoadUri;
     }*/
 
-    public FileResponse(String id, String artistName, String sampleTitle, String audioFile, String sampleImage,  String audioFileDownLoadUri, String imageDownLoadUri,String genre, String trackType, String songKey, String region, String audioDescription, Long sampleID, int samplePrice) {
+    public FileResponse(int queuePosition, String id, String artistName, String sampleTitle, String audioFile, String sampleImage,  String audioFileDownLoadUri, String imageDownLoadUri,String genre, String trackType, String songKey, String region, String audioDescription, Long sampleID, int samplePrice) {
+        this.queuePosition = queuePosition;
         this.id = id;
         this.artistName = artistName;
         this.sampleTitle = sampleTitle;

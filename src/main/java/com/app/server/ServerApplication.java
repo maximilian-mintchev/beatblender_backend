@@ -55,9 +55,6 @@ public class ServerApplication {
 			for (String beanName : beanNames) {
 				System.out.println(beanName);
 			}
-
-
-
 		};
 	}
 
