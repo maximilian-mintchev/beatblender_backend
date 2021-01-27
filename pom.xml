@@ -16,6 +16,10 @@
 
 	<properties>
 		<java.version>1.11</java.version>
+		<keycloak.version>12.0.1</keycloak.version>
+<!--		<keycloak.version>4.8.3.Final</keycloak.version>-->
+
+
 	</properties>
 
 	<dependencies>
@@ -66,11 +70,11 @@
 			<scope>provided</scope>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.okta.spring/okta-spring-boot-starter -->
-		<dependency>
-			<groupId>com.okta.spring</groupId>
-			<artifactId>okta-spring-boot-starter</artifactId>
-			<version>1.3.0</version>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>com.okta.spring</groupId>-->
+<!--			<artifactId>okta-spring-boot-starter</artifactId>-->
+<!--			<version>1.3.0</version>-->
+<!--		</dependency>-->
 
 		<!-- https://mvnrepository.com/artifact/org.springframework.security.oauth/spring-security-oauth2 -->
 
@@ -78,37 +82,37 @@
 
 
 
-		<dependency>
-			<groupId>com.okta.authn.sdk</groupId>
-			<artifactId>okta-authn-sdk-api</artifactId>
-			<version>1.0.0</version>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>com.okta.authn.sdk</groupId>-->
+<!--			<artifactId>okta-authn-sdk-api</artifactId>-->
+<!--			<version>1.0.0</version>-->
+<!--		</dependency>-->
 
 		<!-- https://mvnrepository.com/artifact/com.okta.sdk/okta-sdk-impl -->
-		<dependency>
-			<groupId>com.okta.sdk</groupId>
-			<artifactId>okta-sdk-impl</artifactId>
-			<version>1.5.3</version>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>com.okta.sdk</groupId>-->
+<!--			<artifactId>okta-sdk-impl</artifactId>-->
+<!--			<version>1.5.3</version>-->
+<!--		</dependency>-->
 
 		<!-- https://mvnrepository.com/artifact/com.okta.sdk/okta-sdk-httpclient -->
-		<dependency>
-			<groupId>com.okta.sdk</groupId>
-			<artifactId>okta-sdk-httpclient</artifactId>
-			<version>1.5.3</version>
-			<scope>runtime</scope>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>com.okta.sdk</groupId>-->
+<!--			<artifactId>okta-sdk-httpclient</artifactId>-->
+<!--			<version>1.5.3</version>-->
+<!--			<scope>runtime</scope>-->
+<!--		</dependency>-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webflux</artifactId>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.springframework.security.oauth/spring-security-oauth2 -->
-		<dependency>
-			<groupId>org.springframework.security.oauth</groupId>
-			<artifactId>spring-security-oauth2</artifactId>
-			<version>2.4.0.RELEASE</version>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>org.springframework.security.oauth</groupId>-->
+<!--			<artifactId>spring-security-oauth2</artifactId>-->
+<!--			<version>2.4.0.RELEASE</version>-->
+<!--		</dependency>-->
 		<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -145,10 +149,57 @@
 			<artifactId>jakarta.validation-api</artifactId>
 			<version>2.0.1</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.keycloak/keycloak-spring-boot-starter -->
+		<dependency>
+			<groupId>org.keycloak</groupId>
+			<artifactId>keycloak-spring-boot-starter</artifactId>
+			<version>${keycloak.version}</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.keycloak/keycloak-admin-client -->
+		<dependency>
+			<groupId>org.keycloak</groupId>
+			<artifactId>keycloak-admin-client</artifactId>
+			<version>6.0.1</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.jboss.resteasy/resteasy-jackson2-provider -->
+		<dependency>
+			<groupId>org.jboss.resteasy</groupId>
+			<artifactId>resteasy-jackson2-provider</artifactId>
+			<version>3.6.3.Final</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.jboss.resteasy/resteasy-client -->
+		<dependency>
+			<groupId>org.jboss.resteasy</groupId>
+			<artifactId>resteasy-client</artifactId>
+			<version>3.6.3.Final</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.jboss.resteasy/resteasy-jaxrs -->
+		<dependency>
+			<groupId>org.jboss.resteasy</groupId>
+			<artifactId>resteasy-jaxrs</artifactId>
+			<version>3.6.3.Final</version>
+		</dependency>
+
+
+
+
 
 
 
 	</dependencies>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.keycloak.bom</groupId>
+				<artifactId>keycloak-adapter-bom</artifactId>
+				<version>${keycloak.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<!--<dependencies>
 		<dependency>
