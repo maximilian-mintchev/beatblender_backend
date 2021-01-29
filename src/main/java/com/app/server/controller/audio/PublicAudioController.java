@@ -1,5 +1,6 @@
 package com.app.server.controller.audio;
 
+import com.app.server.messages.response.SampleResponse;
 import com.app.server.model.audio.AudioUnit;
 import com.app.server.model.audio.Sample;
 import com.app.server.repository.audio.AudioUnitRepository;
@@ -27,18 +28,15 @@ public class PublicAudioController {
     Logger logger = LoggerFactory.getLogger(PublicAudioController.class);
 
     @GetMapping("/samples-home")
-    public ResponseEntity<List<Sample>> samplesHome(
+    public ResponseEntity<List<SampleResponse>> samplesHome(
     ) {
-        List<AudioUnit> audioList = new ArrayList<>();
-        List<Sample> sampleList = new ArrayList<>();
-        audioUnitRepository.findAll().forEach(audioList::add);
-        audioList.stream().forEach((audioUnit -> {
-            Optional<Sample> optionalSample = sampleRepository.findByAudioUnit(audioUnit);
-            if (optionalSample.isPresent()) {
-                sampleList.add(optionalSample.get());
-            }
-        }));
 
+        List<Sample> sampleList = new ArrayList<>();
+        List<SampleResponse> sampleResponseList = new ArrayList<>();
+        sampleRepository.findAll().forEach(sampleList::add);
+        sampleList.stream().forEach((sample -> {
+            sampleResponseList.add(new SampleResponse(sample));
+        }));
 //        audioList.stream().forEach((audioUnit -> {
 //            if (audioUnit instanceof Track) {
 //                logger.info("AudioUnit is a Track");
@@ -49,14 +47,12 @@ public class PublicAudioController {
 ////                return ResponseEntity.status(301);
 //            }
 //        }));
-        return ResponseEntity.ok(sampleList);
+        return ResponseEntity.ok(sampleResponseList);
     }
 
     @PostMapping("/search-multiple-audio")
     public ResponseEntity<List<Sample>> searchMultipleAudio(
             @RequestParam("sampleIDs") List<String> sampleIDList) {
-
-//        List<Long> sampleIDList = Arrays.asList(sampleIDs);
         List<Sample> queriedSamples = new ArrayList<>();
         sampleIDList.stream().forEach((id) -> {
             Optional<Sample> optionalSample = sampleRepository.findById(id);
@@ -77,30 +73,10 @@ public class PublicAudioController {
         Sample querySample;
         if (filteredSample.isPresent()) {
             querySample = filteredSample.get();
-
-//            FileResponse[] audioFileArray = new FileResponse[1];
-//            audioFileArray[0] = new FileResponse(
-//                    0,
-//                    querySample.getBasicUser().getBasicUserName(),
-//                    querySample.getArtistName(), querySample.getSampleTitle(),
-//                    querySample.getAudioFilePath(),
-//                    querySample.getSampleImagePath(),
-//                    querySample.getAudioDownLoadUri(),
-//                    querySample.getImageDownLoadUri(),
-//                    querySample.getSampleDetails().getGenre(),
-//                    querySample.getSampleDetails().getTrackType(),
-//                    querySample.getSampleDetails().getSongKey(),
-//                    querySample.getSampleDetails().getRegion(),
-//                    querySample.getSampleDetails().getAudioDescription(),
-//                    querySample.getId(),
-//                    querySample.getSamplePrice()
-//            );
-
             return ResponseEntity.ok(querySample);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-
     }
 
     @PostMapping("/search-music-by-input")
@@ -139,12 +115,11 @@ public class PublicAudioController {
     }
 
     @PostMapping("/filter-samples")
-    private ResponseEntity<Set<Sample>> filterSamples(
+    private ResponseEntity<Set<SampleResponse>> filterSamples(
             @RequestParam("moods") Set<String> moods,
             @RequestParam("tempo") int tempo,
             @RequestParam("genre") String genre
     ) {
-
         if(moods == null || genre == null) {
             throw new NullPointerException("Filter Params are null");
         }
@@ -154,11 +129,14 @@ public class PublicAudioController {
         Set<Sample> samples;
         Optional<Set<Sample>> optionalSamples = sampleRepository.filterAudioUnit(moods,genre,tempo);
         if(optionalSamples.isPresent()) {
+            Set<SampleResponse> sampleResponses = new HashSet<>();
             samples = new HashSet<>(optionalSamples.get());
-            return ResponseEntity.ok(samples);
+            samples.stream().forEach((sample -> {
+                sampleResponses.add(new SampleResponse(sample));
+            }));
+            return ResponseEntity.ok(sampleResponses);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-
     }
 }

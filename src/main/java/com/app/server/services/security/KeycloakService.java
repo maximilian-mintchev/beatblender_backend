@@ -1,8 +1,10 @@
 package com.app.server.services.security;
 
 
+import com.app.server.model.user.User;
 import com.app.server.property.RealmProperties;
 import org.keycloak.adapters.springboot.KeycloakSpringBootProperties;
+import org.keycloak.adapters.springsecurity.account.SimpleKeycloakAccount;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.RoleScopeResource;
@@ -52,6 +54,9 @@ public class KeycloakService {
             } else {
                 throw new NullPointerException("RoleRepresentation is null");
             }
+    }
+    public boolean hasArtistRole(SimpleKeycloakAccount account) {
+        return account.getRoles().contains(realmProperties.getArtistRole());
     }
 
     public void addArtistRole(String userID) {

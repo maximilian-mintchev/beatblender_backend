@@ -69,7 +69,6 @@ public class UtilityService {
     public UtilityService(FileStorageProperties fileStorageProperties) {
         this.fileStorageLocation = Paths.get(fileStorageProperties.getUploadDir()).toAbsolutePath().normalize();
         this.licenseTempalteDir = Paths.get(fileStorageProperties.getUploadDir(), fileStorageProperties.getLicenseTemplateDir(), fileStorageProperties.getLicenseTemplateName());
-
     }
 
 
@@ -185,6 +184,8 @@ public class UtilityService {
                                     tempoList.get(i.get()),
                                     moodListList.get(i.get()),
                                     tagListList.get(i.get()),
+                                    "s8.mp3",
+                                    "typ.jpg",
                                     artistAlias
                             )
                     );

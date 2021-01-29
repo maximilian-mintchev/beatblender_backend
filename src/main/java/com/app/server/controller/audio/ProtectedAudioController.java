@@ -3,7 +3,9 @@ package com.app.server.controller.audio;
 import com.app.server.enums.AudioUnitType;
 import com.app.server.enums.ResponseStatus;
 import com.app.server.messages.response.ResponseMessage;
-import com.app.server.model.audio.*;
+import com.app.server.model.audio.AudioUnit;
+import com.app.server.model.audio.Sample;
+import com.app.server.model.audio.Track;
 import com.app.server.model.user.Artist;
 import com.app.server.model.user.ArtistAlias;
 import com.app.server.model.user.User;
@@ -15,6 +17,9 @@ import com.app.server.repository.user.ArtistRepository;
 import com.app.server.repository.user.UserRepository;
 import com.app.server.services.fileStorage.FileStorageService;
 import com.app.server.services.security.KeycloakService;
+import org.keycloak.adapters.springsecurity.account.SimpleKeycloakAccount;
+import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
+import org.keycloak.representations.AccessToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +29,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Path;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -72,24 +75,24 @@ public class ProtectedAudioController {
             @RequestParam("moods") Set<String> moods,
             @RequestParam("tags") Set<String> tags,
             @RequestParam("file") MultipartFile audioFile,
-            @RequestParam("sampleImage") MultipartFile sampleImage
+            @RequestParam("sampleImage") MultipartFile sampleImage,
 //             Use this Token as Auth Token
-//            KeycloakAuthenticationToken authentication
+            KeycloakAuthenticationToken authentication
     ) {
         if (audioUnitType == null
-                        || artistAliasString == null
-                        || sampleTitle == null
-                        || genre == null
-                        || moods == null
-                        || tags == null
-                        || audioFile == null
-                        || sampleImage == null
+                || artistAliasString == null
+                || sampleTitle == null
+                || genre == null
+                || moods == null
+                || tags == null
+                || audioFile == null
+                || sampleImage == null
 //                        || authentication ==null
         ) {
             throw new NullPointerException("Param is null");
         }
-//        SimpleKeycloakAccount account = (SimpleKeycloakAccount) authentication.getDetails();
-//        AccessToken token = account.getKeycloakSecurityContext().getToken();
+        SimpleKeycloakAccount account = (SimpleKeycloakAccount) authentication.getDetails();
+        AccessToken token = account.getKeycloakSecurityContext().getToken();
 
 
         //        //Username, other way
@@ -105,13 +108,23 @@ public class ProtectedAudioController {
 //        });
 //        logger.info(token.getEmail());
 //        logger.info("upload success");
-
+        if(!keycloakService.hasArtistRole(account)) {
         //Assign new Role To User
-//        this.keycloakService.addRole(authentication.getPrincipal().toString(), "app-admin");
+        this.keycloakService.addRole(authentication.getPrincipal().toString(), "app-admin");
+        }
 
         //Mock authenticated user instead of using a token
-        String principal = "046fcc75-58c4-4492-b9bb-5b84a396e760";
-        String email = "user3@user3.com";
+//        String principal = "046fcc75-58c4-4492-b9bb-5b84a396e760";
+//        String email = "user3@user3.com";
+        String principal = authentication.getPrincipal().toString();
+        if(principal.isEmpty()) {
+            throw new NullPointerException("Principal is null");
+        }
+        String email = token.getEmail();
+        if(email.isEmpty()) {
+            throw new NullPointerException("Email is null");
+        }
+
         //get principal from auth token
 //        String principal = (String) authentication.getPrincipal();
 
@@ -133,7 +146,7 @@ public class ProtectedAudioController {
         if (optionalArtist.isPresent()) {
             artist = optionalArtist.get();
         } else {
-            artist = artistRepository.save(new Artist("Erika", "Musterfrau", LocalDate.now(),authenticatedUser));
+            artist = artistRepository.save(new Artist("Erika", "Musterfrau", LocalDate.now(), authenticatedUser));
         }
         if (moods == null) {
             throw new NullPointerException();
@@ -147,8 +160,8 @@ public class ProtectedAudioController {
 
         // Store Sample Image and File
         //Retrieve email from Token with token.getEmail()
-        fileStorageService.storeFile(audioFile, email);
-        fileStorageService.storeFile(sampleImage, email);
+        String audioFileName = fileStorageService.storeFile(audioFile, authenticatedUser);
+        String imageFileName = fileStorageService.storeFile(sampleImage, authenticatedUser);
         AudioUnit audioUnit;
         Optional<AudioUnit> optionalAudioUnit = audioUnitRepository.findByArtistAlias(artistAlias);
 
@@ -163,6 +176,8 @@ public class ProtectedAudioController {
                             tempo,
                             moods,
                             tags,
+                            audioFileName,
+                            imageFileName,
                             artistAlias
                     )
             );

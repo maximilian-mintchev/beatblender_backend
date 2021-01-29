@@ -65,8 +65,13 @@ public class AudioUnit {
     @CollectionTable(name = "audio_unit_tags", joinColumns = @JoinColumn(name = "audio_unit_id"))
     private Set<String> tags;
 
-    @Column(name = "is_locked", nullable = false, updatable = true)
-    private boolean isLocked;
+//    @Column(name = "is_locked", nullable = false, updatable = true)
+//    private boolean isLocked;
+    @Column(name="audio_file_name")
+    private String audioFileName;
+
+    @Column(name="image_file_name")
+    private String imageFileName;
 
     @Column(name = "LEP")
     private int lep;
@@ -81,18 +86,19 @@ public class AudioUnit {
     @JoinColumn(name = "artist_alias_fk")
     private ArtistAlias artistAlias;
 
-    public AudioUnit() {
 
+    public AudioUnit() {
     }
 
-    public AudioUnit(Artist creator, String title, String genre, int tempo, Set<String> moods, Set<String> tags, ArtistAlias artistAlias) {
+    public AudioUnit(Artist creator, String title, String genre, int tempo, Set<String> moods, Set<String> tags, String audioFileName, String imageFileName, ArtistAlias artistAlias) {
         this.creator = creator;
         this.title = title;
         this.genre = genre;
         this.tempo = tempo;
         this.moods = moods;
         this.tags = tags;
-        this.isLocked = false;
+        this.audioFileName = audioFileName;
+        this.imageFileName = imageFileName;
         this.lep = 0;
         this.downloads = 0;
         this.uploadDate = LocalDateTime.now();
@@ -155,12 +161,20 @@ public class AudioUnit {
         this.tags = tags;
     }
 
-    public boolean isLocked() {
-        return isLocked;
+    public String getAudioFileName() {
+        return audioFileName;
     }
 
-    public void setLocked(boolean locked) {
-        isLocked = locked;
+    public void setAudioFileName(String audioFileName) {
+        this.audioFileName = audioFileName;
+    }
+
+    public String getImageFileName() {
+        return imageFileName;
+    }
+
+    public void setImageFileName(String imageFileName) {
+        this.imageFileName = imageFileName;
     }
 
     public int getLep() {

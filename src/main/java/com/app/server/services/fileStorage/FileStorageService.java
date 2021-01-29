@@ -46,7 +46,7 @@ public class FileStorageService {
     @Autowired
     UserRepository userRepository;
 
-    public String storeFile(MultipartFile file, String userName) {
+    public String storeFile(MultipartFile file, User user) {
         // Normalize file name
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
 
@@ -55,9 +55,9 @@ public class FileStorageService {
             if (fileName.contains("..")) {
                 throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileName);
             }
-            createUserDirectory(userName);
+            createUserDirectory(user.getUuid());
             // Copy file to the target location (Replacing existing file with the same name)
-            Path targetUserLocation = Paths.get(String.valueOf(this.fileStorageLocation), userName);
+            Path targetUserLocation = Paths.get(String.valueOf(this.fileStorageLocation), user.getUuid());
             Path targetLocation = targetUserLocation.resolve(fileName);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 

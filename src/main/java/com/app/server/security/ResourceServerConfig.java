@@ -67,10 +67,10 @@ public class ResourceServerConfig extends KeycloakWebSecurityConfigurerAdapter {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-//        config.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
+        config.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
 //        config.setAllowedOrigins(Collections.singletonList("*"));
 //        config.setAllowedOrigins(Collections.singletonList("http://localhost:9090"));
-        config.setAllowedOrigins(Arrays.asList("http://localhost:9090"));
+//        config.setAllowedOrigins(Arrays.asList("http://localhost:9090"));
         config.setAllowedMethods(Collections.singletonList("*"));
         config.setAllowedHeaders(Collections.singletonList("*"));
         source.registerCorsConfiguration("/**", config);
