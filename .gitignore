@@ -13,6 +13,9 @@ target/
 .springBeans
 .sts4-cache
 
+final_contract.pdf
+new
+
 ### IntelliJ IDEA ###
 .idea
 *.iws
