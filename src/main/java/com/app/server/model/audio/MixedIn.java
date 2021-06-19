@@ -4,6 +4,7 @@ package com.app.server.model.audio;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,9 +24,17 @@ public class MixedIn {
     @Column(name = "uuid", unique = true)
     private String mixedInID;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "audio_unit_fk")
-    private AudioUnit audioUnit;
+    private AudioUnit child;
+
+//    @JoinColumn(name = "track_fk")
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name="track_fk")
+    private AudioUnit parent;
+
+    @Column(name = "creation_date")
+    private LocalDateTime creationDate;
 
     //    @ElementCollection
 //    @CollectionTable(name = "time_snips", joinColumns = @JoinColumn(name = "mixedInID"))
@@ -41,8 +50,10 @@ public class MixedIn {
     public MixedIn() {
     }
 
-    public MixedIn(AudioUnit audioUnit) {
-        this.audioUnit = audioUnit;
+    public MixedIn(AudioUnit parent, AudioUnit child) {
+        this.parent = parent;
+        this.child = child;
+        this.creationDate = LocalDateTime.now();
     }
 
     //    public MixedIn(AudioUnit audioUnit, List<TimeSnippet> timeSnippets) {
@@ -50,18 +61,44 @@ public class MixedIn {
 //        this.timeSnippets = timeSnippets;
 //    }
 
-    public AudioUnit getAudioUnit() {
-        return audioUnit;
+
+    public String getMixedInID() {
+        return mixedInID;
     }
 
-    public void setAudioUnit(AudioUnit audioUnit) {
-        this.audioUnit = audioUnit;
+    public void setMixedInID(String mixedInID) {
+        this.mixedInID = mixedInID;
     }
 
-//    public List<TimeSnippet> getTimeSnippets() {
+    public AudioUnit getChild() {
+        return child;
+    }
+
+    public void setChild(AudioUnit child) {
+        this.child = child;
+    }
+
+    public AudioUnit getParent() {
+        return parent;
+    }
+
+    public void setParent(AudioUnit parent) {
+        this.parent = parent;
+    }
+
+
+    //    public List<TimeSnippet> getTimeSnippets() {
 //        return timeSnippets;
 //    }
 //
+
+    public LocalDateTime getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(LocalDateTime creationDate) {
+        this.creationDate = creationDate;
+    }
 //    public void setTimeSnippets(List<TimeSnippet> timeSnippets) {
 //        this.timeSnippets = timeSnippets;
 //    }

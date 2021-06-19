@@ -4,12 +4,14 @@ import com.app.server.enums.AudioUnitType;
 import com.app.server.enums.ResponseStatus;
 import com.app.server.messages.response.ResponseMessage;
 import com.app.server.model.audio.AudioUnit;
+import com.app.server.model.audio.MixedIn;
 import com.app.server.model.audio.Sample;
 import com.app.server.model.audio.Track;
 import com.app.server.model.user.Artist;
 import com.app.server.model.user.ArtistAlias;
 import com.app.server.model.user.User;
 import com.app.server.repository.audio.AudioUnitRepository;
+import com.app.server.repository.audio.MixedInRepository;
 import com.app.server.repository.audio.SampleRepository;
 import com.app.server.repository.audio.TrackRepository;
 import com.app.server.repository.user.ArtistAliasRepository;
@@ -29,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -61,6 +64,9 @@ public class ProtectedAudioController {
     TrackRepository trackRepository;
 
     @Autowired
+    MixedInRepository mixedInRepository;
+
+    @Autowired
     private KeycloakService keycloakService;
 
     //    @CrossOrigin(origins = "http://localhost:9090")
@@ -68,17 +74,26 @@ public class ProtectedAudioController {
     @PostMapping("/upload-samples")
     public ResponseEntity<?> uploadSamples(
             @RequestParam("audioUnitType") AudioUnitType audioUnitType,
+            @RequestParam("sampleType") Boolean sampleType,
+            @RequestParam("trackType") Boolean trackType,
             @RequestParam("artistAlias") String artistAliasString,
             @RequestParam("sampleTitle") String sampleTitle,
             @RequestParam("tempo") int tempo,
             @RequestParam("genre") String genre,
             @RequestParam("moods") Set<String> moods,
             @RequestParam("tags") Set<String> tags,
+            @RequestParam("samplePrice") int price,
             @RequestParam("file") MultipartFile audioFile,
             @RequestParam("sampleImage") MultipartFile sampleImage,
+            @RequestParam("mixedInID") Set<String> mixedInIDs,
+
 //             Use this Token as Auth Token
             KeycloakAuthenticationToken authentication
     ) {
+//        mixedInIDs.forEach(mixedInID -> {
+//            System.out.println(mixedInID);
+//        });
+
         if (audioUnitType == null
                 || artistAliasString == null
                 || sampleTitle == null
@@ -165,6 +180,8 @@ public class ProtectedAudioController {
         AudioUnit audioUnit;
         Optional<AudioUnit> optionalAudioUnit = audioUnitRepository.findByArtistAlias(artistAlias);
 
+
+
         if (optionalAudioUnit.isPresent()) {
             audioUnit = optionalAudioUnit.get();
         } else {
@@ -178,26 +195,62 @@ public class ProtectedAudioController {
                             tags,
                             audioFileName,
                             imageFileName,
+                            price,
                             artistAlias
                     )
             );
         }
-        switch (audioUnitType) {
-            case Sample:
-                sampleRepository.save(new Sample(
+        if(mixedInIDs != null) {
+
+        Set<AudioUnit> mixedIns = new HashSet<AudioUnit>();
+        mixedInIDs.stream().forEach(mixedInID -> {
+
+            Optional<Sample> optionalMixedIn = sampleRepository.findById(mixedInID);
+            AudioUnit mixedIn;
+            if(optionalMixedIn.isPresent()) {
+                mixedIn = optionalMixedIn.get().getAudioUnit();
+                mixedIns.add(mixedIn);
+            } else {
+                throw new NullPointerException("MixedIn does not exist");
+            }
+
+        });
+
+        mixedIns.stream().forEach(audioUnitMixedIn -> {
+            MixedIn mixedIn = new MixedIn(audioUnit, audioUnitMixedIn);
+            mixedInRepository.save(mixedIn);
+        });
+        }
+
+        if(sampleType) {
+                            sampleRepository.save(new Sample(
                                 audioUnit
                         )
                 );
-                break;
-            case Track:
-                trackRepository.save(
+        }
+        if(trackType) {
+                            trackRepository.save(
                         new Track(
                                 audioUnit
                         )
                 );
-                break;
-
         }
+//        switch (audioUnitType) {
+//            case Sample:
+//                sampleRepository.save(new Sample(
+//                                audioUnit
+//                        )
+//                );
+//                break;
+//            case Track:
+//                trackRepository.save(
+//                        new Track(
+//                                audioUnit
+//                        )
+//                );
+//                break;
+//
+//        }
         return ResponseEntity.ok(
                 new ResponseMessage(ResponseStatus.Success, "Ok")
         );

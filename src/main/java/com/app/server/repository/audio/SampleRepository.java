@@ -4,14 +4,11 @@ import com.app.server.model.audio.AudioUnit;
 import com.app.server.model.audio.Sample;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -36,14 +33,23 @@ import java.util.Set;
 //}
 //@Transactional
 @Repository
-public interface SampleRepository extends JpaRepository<Sample, String> {
+public interface SampleRepository extends PagingAndSortingRepository<Sample, String> {
 
-    @Query("SELECT s FROM Sample s, AudioUnit au, ArtistAlias aa WHERE s.audioUnit = au AND au.artistAlias = aa AND aa.artistName LIKE %:searchString% OR au.title LIKE %:searchString%")     // 2. Spring JPA In cause using @Query
+    @Query("SELECT s FROM Sample s, AudioUnit au, ArtistAlias aa WHERE s.audioUnit = au AND au.artistAlias = aa AND aa.artistName LIKE %:searchString% OR au.title LIKE %:searchString%")
+        // 2. Spring JPA In cause using @Query
     Optional<List<Sample>> findSampleLike(@Param("searchString") String searchString);
 
     Optional<Sample> findByAudioUnit(AudioUnit audioUnit);
 
-    @Query("SELECT s FROM Sample s, AudioUnit au JOIN au.moods m WHERE s.audioUnit = au AND m IN (:moods) AND au.genre = (:genre) AND au.tempo = (:tempo)")
-    Optional<Set<Sample>> filterAudioUnit(@Param("moods") Set<String> moods, @Param("genre") String genre, @Param("tempo") int tempo);
+    /*
+        @Query("SELECT s FROM Sample s, AudioUnit au JOIN au.moods m WHERE s.audioUnit = au AND m IN (:moods) AND au.genre = (:genre) AND au.tempo = (:tempo)")
+        Optional<Set<Sample>> filterAudioUnit(@Param("moods") Set<String> moods, @Param("genre") String genre, @Param("tempo") int tempo);
+    */
+/*
+    @Query("SELECT DISTINCT s FROM Sample s, AudioUnit au JOIN au.moods m WHERE s.audioUnit = au AND au.title LIKE (:searchString) OR au.artistAlias.artistName LIKE (:searchString) AND m IN (:moods) AND au.genre IN (:genres) AND au.tempo BETWEEN (:minTempo) AND (:maxTempo) AND au.lep BETWEEN (:minLep) AND (:maxLep)")
+    Page<Sample> filterAudioUnit(@Param("searchString") String searchString, @Param("genre") Set<String> genres, @Param("moods") Set<String> moods, @Param("minTempo") Integer minTempo, @Param("maxTempo") Integer maxTempo, @Param("minLep") Integer minLep, @Param("maxLep") Integer maxLep, Pageable pageable);
+*/
+
+
 
 }

@@ -69,7 +69,7 @@ public class ResourceServerConfig extends KeycloakWebSecurityConfigurerAdapter {
         config.setAllowCredentials(true);
         config.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
 //        config.setAllowedOrigins(Collections.singletonList("*"));
-//        config.setAllowedOrigins(Collections.singletonList("http://localhost:9090"));
+//        config.setAllowedOrigins(Collections.singletonList("http://[2003:c2:7735:2c00:1ce6:af26:b23c:b028]:4200"));
 //        config.setAllowedOrigins(Arrays.asList("http://localhost:9090"));
         config.setAllowedMethods(Collections.singletonList("*"));
         config.setAllowedHeaders(Collections.singletonList("*"));

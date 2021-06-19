@@ -8,7 +8,9 @@ public class FileStorageProperties {
 
     private String licenseTemplateDir;
 
-    private String licenseTemplateName;
+    private String basicLicenseTemplateName;
+
+    private String fullLicenseTemplateName;
 
     public String getUploadDir() {
         return uploadDir;
@@ -26,11 +28,19 @@ public class FileStorageProperties {
         this.licenseTemplateDir = licenseTemplateDir;
     }
 
-    public String getLicenseTemplateName() {
-        return licenseTemplateName;
+    public String getBasicLicenseTemplateName() {
+        return basicLicenseTemplateName;
     }
 
-    public void setLicenseTemplateName(String licenseTemplateName) {
-        this.licenseTemplateName = licenseTemplateName;
+    public void setBasicLicenseTemplateName(String basicLicenseTemplateName) {
+        this.basicLicenseTemplateName = basicLicenseTemplateName;
+    }
+
+    public String getFullLicenseTemplateName() {
+        return fullLicenseTemplateName;
+    }
+
+    public void setFullLicenseTemplateName(String fullLicenseTemplateName) {
+        this.fullLicenseTemplateName = fullLicenseTemplateName;
     }
 }

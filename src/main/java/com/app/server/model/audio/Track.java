@@ -4,6 +4,7 @@ package com.app.server.model.audio;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 //@Table(name="tracks")
@@ -21,6 +22,12 @@ public class Track {
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "audio_unit_fk")
     private AudioUnit audioUnit;
+
+//    @OneToMany(fetch = FetchType.EAGER)
+//    @JoinColumn(name = )
+//    @OneToMany(targetEntity=MixedIn.class, mappedBy="parent",cascade=CascadeType.ALL, fetch = FetchType.EAGER)
+//    private List<MixedIn> mixedIns;
+
 
     public Track() {
 

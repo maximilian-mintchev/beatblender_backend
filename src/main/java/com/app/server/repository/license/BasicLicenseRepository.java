@@ -11,7 +11,9 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 //@Transactional
@@ -20,6 +22,6 @@ public interface BasicLicenseRepository extends JpaRepository<BasicLicense, Stri
 //    @Query(value = "SELECT * FROM basic_license bl WHERE bl.downloader_id = (:downloaderID) AND bl.sample_id = (:sampleID)", nativeQuery = true)
 //    Optional<com.app.server.model.license.BasicLicense> findByDownloaderIDAndSampleID(@Param("downloaderID") Long downloaderID, @Param("sampleID") Long sampleID);
 
-
+    Optional<List<BasicLicense>> findByDownloader(User user);
     Optional<BasicLicense> findByDownloaderAndSample(User artist, Sample sample);
 }

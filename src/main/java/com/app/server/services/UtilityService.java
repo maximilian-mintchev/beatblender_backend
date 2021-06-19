@@ -63,12 +63,12 @@ public class UtilityService {
 
 
     private final Path fileStorageLocation;
-    private final Path licenseTempalteDir;
+    private final Path basicLicenseTempalteDir;
 
     //    @Autowired
     public UtilityService(FileStorageProperties fileStorageProperties) {
         this.fileStorageLocation = Paths.get(fileStorageProperties.getUploadDir()).toAbsolutePath().normalize();
-        this.licenseTempalteDir = Paths.get(fileStorageProperties.getUploadDir(), fileStorageProperties.getLicenseTemplateDir(), fileStorageProperties.getLicenseTemplateName());
+        this.basicLicenseTempalteDir = Paths.get(fileStorageProperties.getUploadDir(), fileStorageProperties.getLicenseTemplateDir(), fileStorageProperties.getBasicLicenseTemplateName());
     }
 
 
@@ -186,13 +186,15 @@ public class UtilityService {
                                     tagListList.get(i.get()),
                                     "s8.mp3",
                                     "typ.jpg",
+                                    3,
                                     artistAlias
                             )
                     );
+                    sampleRepository.save(new Sample(
+                            audioUnit
+                    ));
                 }
-                sampleRepository.save(new Sample(
-                   audioUnit
-                ));
+
 //                Sample sample = sampleRepository.save(new Sample(
 //                        artist,
 //                        sampleTitles.get(i.get()),

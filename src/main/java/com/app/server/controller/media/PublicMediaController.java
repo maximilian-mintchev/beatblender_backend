@@ -1,7 +1,9 @@
 package com.app.server.controller.media;
 
 
+import com.app.server.model.audio.AudioUnit;
 import com.app.server.model.audio.Sample;
+import com.app.server.repository.audio.AudioUnitRepository;
 import com.app.server.repository.audio.SampleRepository;
 import com.app.server.services.fileStorage.FileStorageService;
 import org.slf4j.Logger;
@@ -27,26 +29,31 @@ public class PublicMediaController {
     @Autowired
     private SampleRepository sampleRepository;
 
+    @Autowired
+    private AudioUnitRepository audioUnitRepository;
+
+
+
 
     //  TODO  Download File API anpassen
 //    @GetMapping("/image/{userName}/{fileName}")
 //            @PathVariable String userName,
 //            @PathVariable String fileName
 //            @PathVariable("fileName") String fileName
-    @GetMapping("/image/{sampleID}")
+    @GetMapping("/image/{audioUnitID}")
     @ResponseBody
     public ResponseEntity<Resource> loadImage(
-            @PathVariable("sampleID") String sampleID
+            @PathVariable("audioUnitID") String audioUnitID
     ) {
         Resource file = null;
         System.out.println("download request");
-        Optional<Sample> optionalSample = sampleRepository.findById(sampleID);
-        if (optionalSample.isEmpty()) {
+        Optional<AudioUnit> optionalAudioUnit = audioUnitRepository.findById(audioUnitID);
+        if (optionalAudioUnit.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-        Sample sample = optionalSample.get();
+        AudioUnit audioUnit = optionalAudioUnit.get();
         try {
-            file = fileStorageService.loadFileAsResource(sample.getAudioUnit().getImageFileName(), sample.getAudioUnit().getArtistAlias().getArtist().getUser().getUuid());
+            file = fileStorageService.loadFileAsResource(audioUnit.getImageFileName(), audioUnit.getArtistAlias().getArtist().getUser().getUuid());
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("SamplePoolRestAPI: Resource not Found");
@@ -59,26 +66,27 @@ public class PublicMediaController {
 
     //            @PathVariable String userName,
 //            @PathVariable String fileName
-    @GetMapping("/audio/{sampleID}")
+    @GetMapping("/audio/{audioUnitID}")
     @ResponseBody
     public ResponseEntity<Resource> loadAudio(
-            @PathVariable("sampleID") String sampleID
+            @PathVariable("audioUnitID") String audioUnitID
     ) {
         Resource file = null;
         System.out.println("download request");
-        Optional<Sample> optionalSample = sampleRepository.findById(sampleID);
-        if (optionalSample.isEmpty()) {
+        Optional<AudioUnit> optionalAudioUnit = audioUnitRepository.findById(audioUnitID);
+        if (optionalAudioUnit.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-        Sample sample = optionalSample.get();
+        AudioUnit audioUnit = optionalAudioUnit.get();
         try {
-            file = fileStorageService.loadFileAsResource(sample.getAudioUnit().getAudioFileName(), sample.getAudioUnit().getArtistAlias().getArtist().getUser().getUuid());
+            file = fileStorageService.loadFileAsResource(audioUnit.getAudioFileName(), audioUnit.getArtistAlias().getArtist().getUser().getUuid());
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("SamplePoolRestAPI: Resource not Found");
         }
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"")
+//                .header(HttpHeaders.CONTENT_TYPE, "audio/mp3")
                 .body(file);
     }
 }

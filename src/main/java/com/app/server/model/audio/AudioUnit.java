@@ -82,6 +82,7 @@ public class AudioUnit {
     @Column(name = "upload_date")
     private LocalDateTime uploadDate;
 
+
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "artist_alias_fk")
     private ArtistAlias artistAlias;
@@ -90,7 +91,7 @@ public class AudioUnit {
     public AudioUnit() {
     }
 
-    public AudioUnit(Artist creator, String title, String genre, int tempo, Set<String> moods, Set<String> tags, String audioFileName, String imageFileName, ArtistAlias artistAlias) {
+    public AudioUnit(Artist creator, String title, String genre, int tempo, Set<String> moods, Set<String> tags, String audioFileName, String imageFileName, int lep, ArtistAlias artistAlias) {
         this.creator = creator;
         this.title = title;
         this.genre = genre;
@@ -99,7 +100,7 @@ public class AudioUnit {
         this.tags = tags;
         this.audioFileName = audioFileName;
         this.imageFileName = imageFileName;
-        this.lep = 0;
+        this.lep = lep;
         this.downloads = 0;
         this.uploadDate = LocalDateTime.now();
         this.artistAlias = artistAlias;

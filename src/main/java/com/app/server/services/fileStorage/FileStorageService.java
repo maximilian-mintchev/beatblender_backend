@@ -2,6 +2,7 @@ package com.app.server.services.fileStorage;
 
 import com.app.server.exceptions.FileStorageException;
 import com.app.server.exceptions.MyFileNotFoundException;
+import com.app.server.model.license.FullLicense;
 import com.app.server.model.user.User;
 import com.app.server.property.FileStorageProperties;
 import com.app.server.repository.user.UserRepository;
@@ -93,6 +94,26 @@ public class FileStorageService {
 //        downloader = optDownloader.get();
 //        target = Paths.get(String.valueOf(this.fileStorageLocation), downloader.getBasicUserName(), "basicLicenses", String.valueOf(sampleID) + ".pdf").normalize();
         target = Paths.get(String.valueOf(this.fileStorageLocation), downloaderID, "basicLicenses", sampleID + ".pdf").normalize();
+        Resource resource = new UrlResource(target.toUri());
+        if (resource.exists()) {
+            return resource;
+        } else {
+            throw new MyFileNotFoundException("URL PATH couldnt be downloaded: " + target);
+        }
+//        } else {
+//            throw  new FileNotFoundException("Error happend while Basic License Download");
+//        }
+
+    }
+
+    public Resource loadFullLicenseAsResource(FullLicense fullLicense, User authUser) throws Exception {
+//        Optional<User> optDownloader = userRepository.findById(downloaderID);
+//        User downloader;
+        Path target;
+//        if(optDownloader.isPresent()) {
+//        downloader = optDownloader.get();
+//        target = Paths.get(String.valueOf(this.fileStorageLocation), downloader.getBasicUserName(), "basicLicenses", String.valueOf(sampleID) + ".pdf").normalize();
+        target = Paths.get(String.valueOf(this.fileStorageLocation), fullLicense.getTrack().getAudioUnit().getCreator().getUser().getUuid(), "fullLicenses", fullLicense.getTrack().getTrackID() + ".pdf").normalize();
         Resource resource = new UrlResource(target.toUri());
         if (resource.exists()) {
             return resource;
