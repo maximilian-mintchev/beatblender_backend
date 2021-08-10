@@ -47,32 +47,43 @@ public class PublicAudioController {
     ) {
 
         try {
-            List<AudioUnit> audioUnitList = new ArrayList<>();
-            List<Sample> sampleList = new ArrayList<>();
-//            List<SampleResponse> sampleResponseList = new ArrayList<>();
-//        sampleRepository.findAll().forEach(sampleList::add);
-            Page<AudioUnit> page = audioService.getAllAudioUnits(pageNo, pageSize, sortBy);
-
-
-            if (page.hasContent()) {
-                audioUnitList = page.getContent();
-//            page.getContent().stream().forEach((audioUnit -> {
+//            List<AudioUnit> audioUnitList = new ArrayList<>();
+//            List<Sample> sampleList = new ArrayList<>();
+////            List<SampleResponse> sampleResponseList = new ArrayList<>();
+////        sampleRepository.findAll().forEach(sampleList::add);
+//            Page<AudioUnit> page = audioService.getAllAudioUnits(pageNo, pageSize, sortBy);
+//
+//
+//            if (page.hasContent()) {
+//                audioUnitList = page.getContent();
+////            page.getContent().stream().forEach((audioUnit -> {
+////                Optional<Sample> optionalSample = sampleRepository.findByAudioUnit(audioUnit);
+////                if(optionalSample.isPresent()) {
+////                    Sample sample = optionalSample.get();
+////                    sampleResponseList.add(new SampleResponse(sample));
+//////                sampleList.add(optionalSample.get());
+////                }
+////            }));
+//            }
+//            for (int i = 0; i < audioUnitList.size(); i++) {
+//                AudioUnit audioUnit = audioUnitList.get(i);
 //                Optional<Sample> optionalSample = sampleRepository.findByAudioUnit(audioUnit);
 //                if(optionalSample.isPresent()) {
 //                    Sample sample = optionalSample.get();
-//                    sampleResponseList.add(new SampleResponse(sample));
+//                    sampleList.add(sample);
 ////                sampleList.add(optionalSample.get());
 //                }
-//            }));
-            }
-            for (int i = 0; i < audioUnitList.size(); i++) {
-                AudioUnit audioUnit = audioUnitList.get(i);
-                Optional<Sample> optionalSample = sampleRepository.findByAudioUnit(audioUnit);
-                if(optionalSample.isPresent()) {
-                    Sample sample = optionalSample.get();
-                    sampleList.add(sample);
-//                sampleList.add(optionalSample.get());
-                }
+//            }
+
+            Page<Sample> samplePage = audioService.getAllSamples(pageNo, pageSize, sortBy);
+            Map<String, Object> responseMap = new HashMap<>();
+            if(samplePage.hasContent()) {
+                responseMap.put("samples", samplePage.getContent());
+                responseMap.put("currentPage", samplePage.getNumber());
+                responseMap.put("totalItems", samplePage.getTotalElements());
+                responseMap.put("totalPages", samplePage.getTotalPages());
+            } else {
+                throw new NullPointerException();
             }
             /*audioUnitList.stream().forEach(audioUnit -> {
                 Optional<Sample> optionalSample = sampleRepository.findByAudioUnit(audioUnit);
@@ -85,11 +96,7 @@ public class PublicAudioController {
             /*sampleList.stream().forEach((sample -> {
                 sampleResponseList.add(new SampleResponse(sample));
             }));*/
-            Map<String, Object> responseMap = new HashMap<>();
-            responseMap.put("samples", sampleList);
-            responseMap.put("currentPage", page.getNumber());
-            responseMap.put("totalItems", page.getTotalElements());
-            responseMap.put("totalPages", page.getTotalPages());
+
 //        audioList.stream().forEach((audioUnit -> {
 //            if (audioUnit instanceof Track) {
 //                logger.info("AudioUnit is a Track");
@@ -373,6 +380,31 @@ public class PublicAudioController {
 //        } else {
 //            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 //        }
+    }
+
+    @GetMapping("/get-sample/{audioUnitID}")
+    @ResponseBody
+    private ResponseEntity<Sample> getAudioUnit(
+//            @RequestParam("search") String searchString,
+            @PathVariable("audioUnitID") String audioUnitID
+//            @RequestParam("pageNo") Integer pageNo,
+//            @RequestParam("pageSize") Integer pageSize
+//            @RequestParam("genres") List<String> genres,
+//            @RequestParam("moods") List<String> moods,
+//            @RequestParam("categories") List<String> categories,
+//            @RequestParam("minTempo") Integer minTempo,
+//            @RequestParam("maxTempo") Integer maxTempo,
+//            @RequestParam("minLep") Integer minLep,
+//            @RequestParam("maxLep") Integer maxLep
+    ) {
+    Optional<Sample> optionalSample = this.audioService.findOneSampleByAudioUnitID(audioUnitID);
+    Sample sample;
+    if(optionalSample.isPresent()) {
+        sample = optionalSample.get();
+    } else {
+        throw new NullPointerException("Sample not Found");
+    }
+    return ResponseEntity.ok(sample);
     }
 
     @GetMapping("/filter-tracks")

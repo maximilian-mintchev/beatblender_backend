@@ -21,7 +21,7 @@ public class UserService {
 
     public User findAuthenticatedUser(KeycloakAuthenticationToken authenticationToken) {
        String principal = authenticationToken.getAccount().getPrincipal().getName();
-        // String principal = "0dad8f18-60e3-4871-b91c-eb600ae1413c";
+         //String principal = "0dad8f18-60e3-4871-b91c-eb600ae1413c";
 //        String principal ="  "
 //        String downloaderID = client.getUser(user.getName()).getId();
 //        String downloaderID = "a9d1a4dd-83fd-4d22-88db-9a6dbe48628a";

@@ -83,7 +83,7 @@ public class LicenseService {
     }
 
     public List<FullLicense> findFullLicensesByArtist(Artist artist) {
-        List<AudioUnit> audioUnitList = findAudioUnitsByArtist(artist);
+        List<AudioUnit> audioUnitList = audioService.findAudioUnitsByArtist(artist);
         List<Track> trackList = audioService.findTracksByAudioUnit(audioUnitList);
         List<FullLicense> fullLicenseList = findFullLicensesByTracks(trackList);
         return fullLicenseList;
@@ -94,14 +94,7 @@ public class LicenseService {
 
 
 
-    public List<AudioUnit> findAudioUnitsByArtist(Artist artist) {
-        Optional<List<AudioUnit>> optionalAudioUnits = audioUnitRepository.findByCreator(artist);
-        List<AudioUnit> audioUnitList  = new ArrayList<>();
-        if(optionalAudioUnits.isPresent()) {
-            audioUnitList = optionalAudioUnits.get();
-        }
-        return audioUnitList;
-    }
+
 
     public List<TrackResponse> createTrackResponse(List<Track> trackList) {
         List<TrackResponse> trackResponseList = new ArrayList<>();
@@ -120,10 +113,7 @@ public class LicenseService {
         return trackList.stream().filter((track -> fullLicenseRepository.findByTrack(track).isPresent())).collect(Collectors.toList());
     }
 
-    public List<Track> findTracksByArtist(Artist artist) {
-        List<AudioUnit> audioUnitLists = findAudioUnitsByArtist(artist);
-        return audioService.findTracksByAudioUnit(audioUnitLists);
-    }
+
 
     public List<FullLicense> findFullLicensesByTracks(List<Track> trackList) {
         List<FullLicense> fullLicenseList = new ArrayList<>();

@@ -35,6 +35,7 @@ public interface AudioUnitRepository extends JpaRepository<AudioUnit, String> {
 
 //    @Query("SELECT au FROM AudioUnit au, ArtistAlias al WHERE au.artistAlias = al AND al.artistName LIKE %:searchString% OR au.title LIKE %:searchString%")     // 2. Spring JPA In cause using @Query
 //    Optional<List<AudioUnit>> findAudioUnitLike(@Param("searchString") String searchString);
+    Optional<AudioUnit> findByAudioUnitID(String audioUnitID);
 
     Optional<List<AudioUnit>> findByCreator(Artist artist);
 

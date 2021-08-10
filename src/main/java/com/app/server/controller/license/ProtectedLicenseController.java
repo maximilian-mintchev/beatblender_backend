@@ -19,6 +19,7 @@ import com.app.server.repository.license.BasicLicenseRepository;
 import com.app.server.repository.license.FullLicenseRepository;
 import com.app.server.repository.user.ArtistRepository;
 import com.app.server.repository.user.UserRepository;
+import com.app.server.services.audio.AudioService;
 import com.app.server.services.license.LicenseService;
 import com.app.server.services.pdf.PDFService;
 import com.app.server.services.user.UserService;
@@ -68,6 +69,10 @@ public class ProtectedLicenseController {
 
     @Autowired
     private LicenseService licenseService;
+
+    @Autowired
+    private AudioService audioService;
+
 
     @Autowired
     private UserService userService;
@@ -311,7 +316,7 @@ public class ProtectedLicenseController {
             KeycloakAuthenticationToken authentication
     ) {
         Artist artist = userService.findArtist(authentication);
-        List<Track> trackList = licenseService.findTracksByArtist(artist);
+        List<Track> trackList = audioService.findTracksByArtist(artist);
         trackList = licenseService.findUnextendedTracks(trackList);
         List<TrackResponse> trackResponseList = licenseService.createTrackResponse(trackList);
         return ResponseEntity.ok(trackResponseList);
@@ -346,7 +351,7 @@ public class ProtectedLicenseController {
 ////            artist = artistRepository.save(new Artist("Erika", "Musterfrau", LocalDate.now(), authenticatedUser));
         Artist artist = userService.findArtist(authentication);
 //        }
-        List<Track> trackList = licenseService.findTracksByArtist(artist);
+        List<Track> trackList = audioService.findTracksByArtist(artist);
 //        Optional<List<AudioUnit>> optAudioUnits = audioUnitRepository.findByCreator(artist);
 //        List<AudioUnit> audioUnits;
 //        if(optAudioUnits.isPresent()) {
