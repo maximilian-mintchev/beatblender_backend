@@ -2,6 +2,8 @@ package com.app.server.repository.audio;
 
 import com.app.server.model.audio.AudioUnit;
 import com.app.server.model.audio.Track;
+import com.app.server.model.user.Artist;
+import com.app.server.model.user.ArtistAlias;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,8 +23,8 @@ import java.util.Optional;
 @Repository
 public interface TrackRepository extends JpaRepository<Track, String> {
 
-
-    Optional<Track> findByAudioUnit(AudioUnit audioUnit);
+    @Query("SELECT t FROM Track t, AudioUnit  au WHERE t.audioUnit = au AND au.artistAlias = (:artistAlias)")     // 2. Spring JPA In cause using @Query
+    Optional<List<Track>> findByArtistAlias(ArtistAlias artistAlias);
 
 
 

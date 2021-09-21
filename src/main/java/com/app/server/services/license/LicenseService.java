@@ -1,5 +1,6 @@
 package com.app.server.services.license;
 
+import com.app.server.enums.LicenseType;
 import com.app.server.messages.response.TrackResponse;
 import com.app.server.model.audio.AudioUnit;
 import com.app.server.model.audio.MixedIn;
@@ -45,7 +46,7 @@ public class LicenseService {
     private FullLicenseRepository fullLicenseRepository;
 
     public List<MixedIn> findMixedInsByTrack(Track track) {
-        Optional<List<MixedIn>> optMixedInList = mixedInRepository.findAllByParent(track.getAudioUnit());
+        Optional<List<MixedIn>> optMixedInList = mixedInRepository.findAllByTrack(track);
         List<MixedIn> mixedInList = new ArrayList<>();
         if(optMixedInList.isPresent()) {
             mixedInList = optMixedInList.get();
@@ -57,37 +58,35 @@ public class LicenseService {
 
 //    public List<>
 
-    public List<BasicLicense> findBasicLicensesByTrack(Track track) {
-        Optional<List<MixedIn>> optMixedInList = mixedInRepository.findAllByParent(track.getAudioUnit());
-        List<MixedIn> mixedInList;
-        if(optMixedInList.isPresent()) {
-            mixedInList = optMixedInList.get();
-            List<BasicLicense> basicLicensList = new ArrayList<>();
-            return mixedInList.stream().map(mixedIn -> {
-                Optional<Sample> optionalSample = sampleRepository.findByAudioUnit(mixedIn.getChild());
-                if(optionalSample.isPresent()) {
-                    Optional<BasicLicense> optionalBasicLicense = basicLicenseRepository.findByDownloaderAndSample(track.getAudioUnit().getCreator().getUser(),optionalSample.get());
-                    if(optionalBasicLicense.isPresent()) {
-                        return optionalBasicLicense.get();
-                    } else {
-                        throw new NullPointerException("No Basic License found.");
-                    }
-                }
-                throw new NullPointerException();
-            }).collect(Collectors.toList());
-//                        List<S>
-//                        mixedIns.add(mixedIn);
-        } else {
-            throw new NullPointerException("MixedInNotFound");
-        }
-    }
+//    public List<BasicLicense> findBasicLicensesByTrack(Track track) {
+//        Optional<List<MixedIn>> optMixedInList = mixedInRepository.findAllByTrack(track);
+//        List<MixedIn> mixedInList;
+//        if(optMixedInList.isPresent()) {
+//            mixedInList = optMixedInList.get();
+//            List<BasicLicense> basicLicensList = new ArrayList<>();
+//            return mixedInList.stream().map(mixedIn -> {
+//                Optional<Sample> optionalSample = sampleRepository.findByAudioUnit(mixedIn.getSample().getAudioUnit());
+//                if(optionalSample.isPresent()) {
+//                    Optional<BasicLicense> optionalBasicLicense = basicLicenseRepository.findByDownloaderAndSample(track.getAudioUnit().getCreator().getUser(),optionalSample.get());
+//                    if(optionalBasicLicense.isPresent()) {
+//                        return optionalBasicLicense.get();
+//                    } else {
+//                        throw new NullPointerException("No Basic License found.");
+//                    }
+//                }
+//                throw new NullPointerException();
+//            }).collect(Collectors.toList());
+//        } else {
+//            throw new NullPointerException("MixedInNotFound");
+//        }
+//    }
 
-    public List<FullLicense> findFullLicensesByArtist(Artist artist) {
-        List<AudioUnit> audioUnitList = audioService.findAudioUnitsByArtist(artist);
-        List<Track> trackList = audioService.findTracksByAudioUnit(audioUnitList);
-        List<FullLicense> fullLicenseList = findFullLicensesByTracks(trackList);
-        return fullLicenseList;
-    }
+//    public List<FullLicense> findFullLicensesByArtist(Artist artist) {
+//        List<AudioUnit> audioUnitList = audioService.findAudioUnitsByArtist(artist);
+//        List<Track> trackList = audioService.findTracksByAudioUnit(audioUnitList);
+//        List<FullLicense> fullLicenseList = findFullLicensesByTracks(trackList);
+//        return fullLicenseList;
+//    }
 
 
 
@@ -96,14 +95,14 @@ public class LicenseService {
 
 
 
-    public List<TrackResponse> createTrackResponse(List<Track> trackList) {
-        List<TrackResponse> trackResponseList = new ArrayList<>();
-        trackList.stream().forEach(track -> {
-            List<BasicLicense> basicLicenseList = findBasicLicensesByTrack(track);
-            trackResponseList.add(new TrackResponse(track, basicLicenseList));
-        });
-        return trackResponseList;
-    }
+//    public List<TrackResponse> createTrackResponse(List<Track> trackList) {
+//        List<TrackResponse> trackResponseList = new ArrayList<>();
+//        trackList.stream().forEach(track -> {
+//            List<BasicLicense> basicLicenseList = findBasicLicensesByTrack(track);
+//            trackResponseList.add(new TrackResponse(track, basicLicenseList));
+//        });
+//        return trackResponseList;
+//    }
 
     public List<Track> findUnextendedTracks(List<Track> trackList) {
         return trackList.stream().filter((track -> fullLicenseRepository.findByTrack(track).isEmpty())).collect(Collectors.toList());
@@ -132,6 +131,19 @@ public class LicenseService {
             return optionalFullLicense.get();
         } else {
             throw new NullPointerException("Could not find Full License.");
+        }
+    }
+
+    public LicenseType mapLicenseType(String licenseType) {
+        switch (licenseType) {
+            case "BB100":
+                return LicenseType.BB100;
+            case "BB70":
+                return LicenseType.BB70;
+            case "BB30":
+                return LicenseType.BB30;
+            default:
+                throw new IllegalArgumentException("Wrong License Type submitted");
         }
     }
 }

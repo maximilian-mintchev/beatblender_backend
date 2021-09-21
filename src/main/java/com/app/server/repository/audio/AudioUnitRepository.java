@@ -37,23 +37,27 @@ public interface AudioUnitRepository extends JpaRepository<AudioUnit, String> {
 //    Optional<List<AudioUnit>> findAudioUnitLike(@Param("searchString") String searchString);
     Optional<AudioUnit> findByAudioUnitID(String audioUnitID);
 
-    Optional<List<AudioUnit>> findByCreator(Artist artist);
+    Optional<List<AudioUnit>> findByArtistAlias(ArtistAlias artistAlias);
 
-    @Query("SELECT DISTINCT au FROM AudioUnit au, ArtistAlias al WHERE au.artistAlias = al AND al.artistName LIKE %:searchString% OR au.title LIKE %:searchString%")     // 2. Spring JPA In cause using @Query
-    Page<AudioUnit> findAudioUnitLike(@Param("searchString") String searchString, Pageable pageable);
+//    Optional<AudioUnit> findByArtistAlias(ArtistAlias artistAlias);
 
-    @Query("SELECT DISTINCT au FROM AudioUnit au, Sample s JOIN au.moods m WHERE s.audioUnit = au AND au.title LIKE %:searchString% OR au.artistAlias.artistName LIKE %:searchString% AND m IN (:moods) AND au.genre IN (:genres) AND au.tempo BETWEEN (:minTempo) AND (:maxTempo) AND au.lep BETWEEN (:minLep) AND (:maxLep)")
-    Page<AudioUnit> filterAudioUnit(@Param("searchString") String searchString, @Param("genres") Set<String> genres, @Param("moods") Set<String> moods, @Param("minTempo") Integer minTempo, @Param("maxTempo") Integer maxTempo, @Param("minLep") Integer minLep, @Param("maxLep") Integer maxLep, Pageable pageable);
+//    @Query("SELECT DISTINCT au FROM AudioUnit au, ArtistAlias al WHERE au.artistAlias = al AND al.artistName LIKE %:searchString% OR au.title LIKE %:searchString%")     // 2. Spring JPA In cause using @Query
+//    Page<AudioUnit> findAudioUnitLike(@Param("searchString") String searchString, Pageable pageable);
 
-    @Query("SELECT DISTINCT au FROM AudioUnit au, Sample s JOIN au.moods m WHERE s.audioUnit = au AND au.title LIKE %:searchString% OR au.artistAlias.artistName LIKE %:searchString%")
-    Page<AudioUnit> filterTest(@Param("searchString") String searchString, Pageable pageable);
+//    @Query("SELECT DISTINCT au FROM AudioUnit au, Sample s JOIN au.moods m WHERE s.audioUnit = au AND au.title LIKE %:searchString% OR au.artistAlias.artistName LIKE %:searchString% AND m IN (:moods) AND au.genre IN (:genres) AND au.tempo BETWEEN (:minTempo) AND (:maxTempo)")
+//    Page<AudioUnit> filterAudioUnit(@Param("searchString") String searchString, @Param("genres") Set<String> genres, @Param("moods") Set<String> moods, @Param("minTempo") Integer minTempo, @Param("maxTempo") Integer maxTempo, Pageable pageable);
+//
+//    @Query("SELECT DISTINCT au FROM AudioUnit au, Sample s JOIN au.moods m WHERE s.audioUnit = au AND au.title LIKE %:searchString% OR au.artistAlias.artistName LIKE %:searchString%")
+//    Page<AudioUnit> filterTest(@Param("searchString") String searchString, Pageable pageable);
+//
+
 //    AND m IN (:moods) AND au.genre IN (:genres) AND au.tempo BETWEEN (:minTempo) AND (:maxTempo) AND au.lep BETWEEN (:minLep) AND (:maxLep)
 
-    @Query("SELECT DISTINCT au FROM AudioUnit au, Sample s JOIN au.moods m WHERE s.audioUnit = au AND (au.title LIKE %:searchString% OR au.artistAlias.artistName LIKE %:searchString%) AND (au.tempo BETWEEN (:minTempo) AND (:maxTempo)) AND (m IN (:moods)) AND (au.genre IN (:genres))")
+    @Query("SELECT DISTINCT au FROM AudioUnit au, Sample s JOIN s.moods m WHERE s.audioUnit = au AND (au.title LIKE %:searchString% OR au.artistAlias.artistName LIKE %:searchString%) AND (s.tempo BETWEEN (:minTempo) AND (:maxTempo)) AND (m IN (:moods)) AND (s.genre IN (:genres))")
     Page<AudioUnit> filterTest1(@Param("searchString") String searchString, @Param("genres") List<String> genres, @Param("moods") List<String> moods ,@Param("minTempo") Integer minTempo, @Param("maxTempo") Integer maxTempo, Pageable pageable);
 
-    @Query("SELECT DISTINCT au FROM AudioUnit au, Sample s JOIN au.moods m WHERE s.audioUnit = au AND (au.tempo BETWEEN (:minTempo) AND (:maxTempo)) AND (m IN (:moods)) AND (au.genre IN (:genres))")
-    Page<AudioUnit> filterAudioUnits(@Param("genres") List<String> genres, @Param("moods") List<String> moods ,@Param("minTempo") Integer minTempo, @Param("maxTempo") Integer maxTempo, Pageable pageable);
+//    @Query("SELECT DISTINCT au FROM AudioUnit au, Sample s JOIN au.moods m WHERE s.audioUnit = au AND (au.tempo BETWEEN (:minTempo) AND (:maxTempo)) AND (m IN (:moods)) AND (au.genre IN (:genres))")
+//    Page<AudioUnit> filterAudioUnits(@Param("genres") List<String> genres, @Param("moods") List<String> moods ,@Param("minTempo") Integer minTempo, @Param("maxTempo") Integer maxTempo, Pageable pageable);
 
 
 
@@ -63,5 +67,4 @@ public interface AudioUnitRepository extends JpaRepository<AudioUnit, String> {
     Page<AudioUnit> findAllSamples(Pageable pageable);
 */
 
-    Optional<AudioUnit> findByArtistAlias(ArtistAlias artistAlias);
 }

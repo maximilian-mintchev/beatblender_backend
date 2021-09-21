@@ -26,12 +26,12 @@ public class MixedIn {
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "audio_unit_fk")
-    private AudioUnit child;
+    private Sample sample;
 
 //    @JoinColumn(name = "track_fk")
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name="track_fk")
-    private AudioUnit parent;
+    private Track track;
 
     @Column(name = "creation_date")
     private LocalDateTime creationDate;
@@ -50,12 +50,16 @@ public class MixedIn {
     public MixedIn() {
     }
 
-    public MixedIn(AudioUnit parent, AudioUnit child) {
-        this.parent = parent;
-        this.child = child;
+//    public MixedIn(AudioUnit parent, AudioUnit child) {
+//        this.parent = parent;
+//        this.child = child;
+//    }
+
+    public MixedIn(Sample sample, Track track) {
+        this.sample = sample;
+        this.track = track;
         this.creationDate = LocalDateTime.now();
     }
-
     //    public MixedIn(AudioUnit audioUnit, List<TimeSnippet> timeSnippets) {
 //        this.audioUnit = audioUnit;
 //        this.timeSnippets = timeSnippets;
@@ -70,22 +74,21 @@ public class MixedIn {
         this.mixedInID = mixedInID;
     }
 
-    public AudioUnit getChild() {
-        return child;
+    public Sample getSample() {
+        return sample;
     }
 
-    public void setChild(AudioUnit child) {
-        this.child = child;
+    public void setSample(Sample sample) {
+        this.sample = sample;
     }
 
-    public AudioUnit getParent() {
-        return parent;
+    public Track getTrack() {
+        return track;
     }
 
-    public void setParent(AudioUnit parent) {
-        this.parent = parent;
+    public void setTrack(Track track) {
+        this.track = track;
     }
-
 
     //    public List<TimeSnippet> getTimeSnippets() {
 //        return timeSnippets;

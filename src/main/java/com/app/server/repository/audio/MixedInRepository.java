@@ -13,6 +13,6 @@ import java.util.Optional;
 public interface MixedInRepository extends JpaRepository<MixedIn, String> {
 
 
-    Optional<List<MixedIn>> findAllByParent(AudioUnit parent);
+    Optional<List<MixedIn>> findAllByTrack(Track track);
 
 }

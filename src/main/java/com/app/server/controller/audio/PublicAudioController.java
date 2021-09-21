@@ -1,14 +1,19 @@
 package com.app.server.controller.audio;
 
+import com.app.server.enums.LicenseType;
 import com.app.server.enums.TrackFilterCategory;
 import com.app.server.messages.response.SampleResponse;
 import com.app.server.model.audio.AudioUnit;
 import com.app.server.model.audio.Sample;
 import com.app.server.model.audio.Track;
 import com.app.server.model.searchfilterform.SearchFilter;
+import com.app.server.model.user.Artist;
+import com.app.server.model.user.ArtistAlias;
 import com.app.server.repository.audio.AudioUnitRepository;
 import com.app.server.repository.audio.SampleRepository;
 import com.app.server.services.audio.AudioService;
+import com.app.server.services.license.LicenseService;
+import com.app.server.services.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
@@ -36,6 +41,12 @@ public class PublicAudioController {
 
     @Autowired
     AudioService audioService;
+
+    @Autowired
+    UserService userService;
+
+    @Autowired
+    LicenseService licenseService;
 
     Logger logger = LoggerFactory.getLogger(PublicAudioController.class);
 
@@ -193,7 +204,7 @@ public class PublicAudioController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        Page<AudioUnit> page = audioService.findSamplesByString(pageNo, pageSize, sortBy,searchString);
+        Page<Sample> page = audioService.findSamplesByString(pageNo, pageSize, sortBy,searchString);
 
 
 //        Optional<List<AudioUnit>> optionalAudioUnits = this.audioUnitRepository.findAudioUnitLike(searchString);
@@ -204,9 +215,9 @@ public class PublicAudioController {
         if (!page.hasContent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        List<AudioUnit> audioUnitList;
-        audioUnitList = page.getContent();
-        List<Sample> sampleList = new ArrayList<>();
+//        List<AudioUnit> audioUnitList;
+//        audioUnitList = page.getContent();
+        List<Sample> sampleList = page.getContent();
 //        for(int i = 0; i < audioUnitList.size(); i++) {
 //            Optional<Sample> optionalSample = sampleRepository.findByAudioUnit(audioUnitList.get(i));
 //            if(optionalSample.isPresent()) {
@@ -216,16 +227,16 @@ public class PublicAudioController {
 //                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 //            }
 //        }
-        for (int i = 0; i < audioUnitList.size(); i++) {
-            AudioUnit audioUnit = audioUnitList.get(i);
-            Optional<Sample> optionalSample = sampleRepository.findByAudioUnit(audioUnit);
-            if(optionalSample.isPresent()) {
-                Sample sample = optionalSample.get();
-                sampleList.add(sample);
-            } else {
-//                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-        }
+//        for (int i = 0; i < sampleList.size(); i++) {
+//            AudioUnit audioUnit = audioUnitList.get(i);
+//            Optional<Sample> optionalSample = sampleRepository.findByAudioUnit(audioUnit);
+//            if(optionalSample.isPresent()) {
+//                Sample sample = optionalSample.get();
+//                sampleList.add(sample);
+//            } else {
+////                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+//            }
+//        }
 
         Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("samples", sampleList);
@@ -340,7 +351,7 @@ public class PublicAudioController {
         if(!audioUnitPage.hasContent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        List<AudioUnit> audioUnitList = new ArrayList<>();
+        List<AudioUnit> audioUnitList = audioUnitPage.getContent();
         audioUnitList = audioUnitPage.getContent();
         List<Sample> sampleList = new ArrayList<>();
         for (int i = 0; i < audioUnitList.size(); i++) {
@@ -407,93 +418,45 @@ public class PublicAudioController {
     return ResponseEntity.ok(sample);
     }
 
-    @GetMapping("/filter-tracks")
-    @ResponseBody
-    private ResponseEntity<Map<String, Object>> filterTracks(
-            @RequestParam("search") String searchString,
-            @RequestParam("sortBy") String sortBy,
-            @RequestParam("pageNo") Integer pageNo,
-            @RequestParam("pageSize") Integer pageSize
-//            @RequestParam("genres") List<String> genres,
-//            @RequestParam("moods") List<String> moods,
-//            @RequestParam("categories") List<String> categories,
-//            @RequestParam("minTempo") Integer minTempo,
-//            @RequestParam("maxTempo") Integer maxTempo,
-//            @RequestParam("minLep") Integer minLep,
-//            @RequestParam("maxLep") Integer maxLep
-    ) {
-        /*if (moods == null || genres == null || categories == null) {
-            throw new NullPointerException("Filter Params are null");
-        }
-        if (genres.equals("") || moods.equals("") || categories.equals("")) {
-            throw new IllegalArgumentException("Params cannot be empty");
-        }*/
-//        String searchString;
-//        if(optSearchString.isPresent()) {
-//            searchString = optSearchString.get();
+//    @GetMapping("/filter-tracks")
+//    @ResponseBody
+//    private ResponseEntity<Map<String, Object>> filterTracks(
+//            @RequestParam("search") String searchString,
+//            @RequestParam("sortBy") String sortBy,
+//            @RequestParam("pageNo") Integer pageNo,
+//            @RequestParam("pageSize") Integer pageSize
+//
+//    ) {
+//
+//
+//        Map<String, Object> trackResponse = audioService.findTracksLike(searchString, pageNo, pageSize, sortBy);
+//        return ResponseEntity.ok(trackResponse);
+//
+//    }
+
+//    @GetMapping("/get-artists-by-license-type/{licenseType}")
+//    @ResponseBody
+//    private ResponseEntity<List<ArtistAlias>> getArtistsByLicenseType(
+//            @PathVariable("licenseType") String licenseTypeAsString
+//    ) {
+//        LicenseType licenseType = licenseService.mapLicenseType(licenseTypeAsString);
+//        List<Artist> artistsList = userService.findArtistsByLicenseType(licenseType);
+//        if(artistsList.size() > 0) {
+//            List<ArtistAlias> artistAliasList =userService.findArtistAliasByArtists(artistsList);
+//            return ResponseEntity.ok(artistAliasList);
 //        } else {
-//            throw new NullPointerException("searchString is null");
+//            throw new NullPointerException("No Artists with Samples found");
 //        }
+//    }
 
-        Map<String, Object> trackResponse = audioService.findTracksLike(searchString, pageNo, pageSize, sortBy);
-        return ResponseEntity.ok(trackResponse);
-//        List<Sample> samples;
-//        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
-//        Page<AudioUnit> audioUnitPage = audioService.filterSamples(new SearchFilter(
-//                pageable,
-//                searchString,
-//                genres,
-//                moods,
-//                categories,
-//                minTempo,
-//                maxTempo,
-//                minLep,
-//                maxLep
-//        ));
-////        Optional<Set<Sample>> optionalSamples = sampleRepository.filterAudioUnit(searchString, genres, moods, minTempo, maxTempo, minLep, maxLep);
-//        if(!audioUnitPage.hasContent()) {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-//        List<AudioUnit> audioUnitList = new ArrayList<>();
-//        audioUnitList = audioUnitPage.getContent();
-//        List<Sample> sampleList = new ArrayList<>();
-//        for (int i = 0; i < audioUnitList.size(); i++) {
-//            AudioUnit audioUnit = audioUnitList.get(i);
-//            Optional<Sample> optionalSample = sampleRepository.findByAudioUnit(audioUnit);
-//            if(optionalSample.isPresent()) {
-//                Sample sample = optionalSample.get();
-//                sampleList.add(sample);
-////                sampleList.add(optionalSample.get());
-//            }
-//        }
+//    @PostMapping("/artists-home")
+//    private ResponseEntity<Map<String, Object>> getArtistsHome(
+//            @RequestParam("licenseType") String licenseTypeAsString,
+//            @RequestParam("sortBy") String sortBy,
+//            @RequestParam("pageNo") Integer pageNo,
+//            @RequestParam("pageSize") Integer pageSize
+//    ) {
+//        LicenseType licenseType = licenseService.mapLicenseType(licenseTypeAsString);
 //
-//
-////        List<SampleResponse> sampleResponses = new ArrayList<>();
-////        samples = samplePage.getContent();
-////        samples.stream().forEach((sample -> {
-////            sampleResponses.add(new SampleResponse(sample));
-////        }));
-//        Map<String, Object> responseMap = new HashMap<>();
-//        responseMap.put("samples", sampleList);
-//        responseMap.put("currentPage", audioUnitPage.getNumber());
-//        responseMap.put("totalItems",audioUnitPage.getTotalElements());
-//        responseMap.put("totalPages", audioUnitPage.getTotalPages());
-//
-//        return new ResponseEntity<>(responseMap, HttpStatus.OK);
-
-//        return ResponseEntity.ok(sampleResponses);
-
-
-//        if (optionalSamples.isPresent()) {
-//            Set<SampleResponse> sampleResponses = new HashSet<>();
-//            samples = new HashSet<>(optionalSamples.get());
-//            samples.stream().forEach((sample -> {
-//                sampleResponses.add(new SampleResponse(sample));
-//            }));
-//            return ResponseEntity.ok(sampleResponses);
-//        } else {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-    }
-
+//    }
 }

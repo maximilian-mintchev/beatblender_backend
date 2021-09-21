@@ -2,6 +2,7 @@ package com.app.server.services;
 
 import com.app.server.ServerApplication;
 import com.app.server.enums.AudioUnitType;
+import com.app.server.enums.LicenseType;
 import com.app.server.exceptions.FileStorageException;
 import com.app.server.model.audio.*;
 import com.app.server.model.user.Artist;
@@ -158,7 +159,7 @@ public class UtilityService {
                 if (optionalArtist.isPresent()) {
                     artist = optionalArtist.get();
                 } else {
-                    artist = artistRepository.save(new Artist("Max", "Mustermann", LocalDate.now(), user));
+                    artist = artistRepository.save(new Artist(user));
                 }
                 ArtistAlias artistAlias;
                 Optional<List<ArtistAlias>> optionalArtistAlias = artistAliasRepository.findByArtist(artist);
@@ -167,33 +168,36 @@ public class UtilityService {
                 } else {
                     artistAlias = artistAliasRepository.save(new ArtistAlias(
                             artistNames.get(i.get()),
-                            artist
+                            artist,
+                            "typ.jpg"
                     ));
                 }
+                artist.setCurrentArtistAliasID(artistAlias.getArtistALiasID());
+                artistRepository.save(artist);
                 AudioUnit audioUnit;
-                Optional<AudioUnit> optionalAudioUnit = audioUnitRepository.findByArtistAlias(artistAlias);
-
-                if (optionalAudioUnit.isPresent()) {
-                    audioUnit = optionalAudioUnit.get();
-                } else {
-                    audioUnit = audioUnitRepository.save(
-                            new AudioUnit(
-                                    artist,
-                                    sampleTitles.get(i.get()),
-                                    genres.get(i.get()),
-                                    tempoList.get(i.get()),
-                                    moodListList.get(i.get()),
-                                    tagListList.get(i.get()),
-                                    "s8.mp3",
-                                    "typ.jpg",
-                                    3,
-                                    artistAlias
-                            )
-                    );
-                    sampleRepository.save(new Sample(
-                            audioUnit
-                    ));
-                }
+                Sample sample;
+//                Optional<AudioUnit> optionalAudioUnit = audioUnitRepository.findByArtistAlias(artistAlias);
+                audioUnit = audioUnitRepository.save(
+                        new AudioUnit(
+//                                    artist,
+                                artistAlias,
+                                sampleTitles.get(i.get()),
+                                "s8.mp3",
+                                "typ.jpg"
+                        )
+                );
+                sampleRepository.save(new Sample(
+                        audioUnit,
+                        genres.get(i.get()),
+                        tempoList.get(i.get()),
+                        moodListList.get(i.get()),
+                        tagListList.get(i.get())
+                ));
+//                if (optionalAudioUnit.isPresent()) {
+//                    audioUnit = optionalAudioUnit.get();
+//                } else {
+//
+//                }
 
 //                Sample sample = sampleRepository.save(new Sample(
 //                        artist,

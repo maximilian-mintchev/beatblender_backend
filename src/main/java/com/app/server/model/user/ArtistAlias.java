@@ -35,6 +35,10 @@ public class ArtistAlias {
     @Column(name = "artist_name", nullable = false, updatable = true)
     private String artistName;
 
+    @Column(name = "artist_image_file_name", nullable = false, updatable = true)
+    private String artistImageFileName;
+
+
     @Column(name = "creation_date", nullable = false, updatable = false)
     private LocalDateTime creationDate;
 
@@ -47,10 +51,16 @@ public class ArtistAlias {
     private Artist artist;
 
 
-    public ArtistAlias(String name, Artist artist) {
+    public ArtistAlias(String name, Artist artist, String artistImageFileName) {
         this.artistName = name;
         this.artist = artist;
         this.creationDate = LocalDateTime.now();
+        this.artistImageFileName = artistImageFileName;
+    }
+
+    public ArtistAlias(String artistName, Artist artist) {
+        this.artistName = artistName;
+        this.artist = artist;
     }
 
     public ArtistAlias() {
@@ -80,6 +90,14 @@ public class ArtistAlias {
 
     public void setArtistName(String artistName) {
         this.artistName = artistName;
+    }
+
+    public String getArtistImageFileName() {
+        return artistImageFileName;
+    }
+
+    public void setArtistImageFileName(String artistImageFileName) {
+        this.artistImageFileName = artistImageFileName;
     }
 
     public LocalDateTime getCreationDate() {

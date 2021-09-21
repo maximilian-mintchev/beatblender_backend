@@ -1,10 +1,12 @@
 package com.app.server.services.audio;
 
+import com.app.server.enums.LicenseType;
 import com.app.server.model.audio.AudioUnit;
 import com.app.server.model.audio.Sample;
 import com.app.server.model.audio.Track;
 import com.app.server.model.searchfilterform.SearchFilter;
 import com.app.server.model.user.Artist;
+import com.app.server.model.user.ArtistAlias;
 import com.app.server.repository.audio.AudioUnitRepository;
 import com.app.server.repository.audio.SampleRepository;
 import com.app.server.repository.audio.TrackRepository;
@@ -16,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class AudioService {
@@ -73,18 +76,22 @@ public class AudioService {
         return trackPage;
     }
 
-    public List<Track> findTracksByArtist(Artist artist) {
-        List<AudioUnit> audioUnitLists = findAudioUnitsByArtist(artist);
-        return findTracksByAudioUnit(audioUnitLists);
+//    public List<Track> findTracksByArtist(Artist artist) {
+//        List<AudioUnit> audioUnitLists = findAudioUnitsByArtist(artist);
+//        return findTracksByAudioUnit(audioUnitLists);
+//    }
+
+//    public List<Sample> findSamplesByArtist(Artist artist) {
+//        List<AudioUnit> audioUnitLists = findAudioUnitsByArtist(artist);
+//        return findSamplesByAudioUnit(audioUnitLists);
+//    }
+
+    public Page<Sample> findSamplesByArtistAlias(ArtistAlias artistAlias, Pageable pageable) {
+        return sampleRepository.findSamplePageByArtistAliasID(artistAlias.getArtistALiasID(), pageable);
     }
 
-    public List<Sample> findSamplesByArtist(Artist artist) {
-        List<AudioUnit> audioUnitLists = findAudioUnitsByArtist(artist);
-        return findSamplesByAudioUnit(audioUnitLists);
-    }
-
-    public List<AudioUnit> findAudioUnitsByArtist(Artist artist) {
-        Optional<List<AudioUnit>> optionalAudioUnits = audioUnitRepository.findByCreator(artist);
+    public List<AudioUnit> findAudioUnitsByArtistAlias(ArtistAlias artistAlias) {
+        Optional<List<AudioUnit>> optionalAudioUnits = audioUnitRepository.findByArtistAlias(artistAlias);
         List<AudioUnit> audioUnitList  = new ArrayList<>();
         if(optionalAudioUnits.isPresent()) {
             audioUnitList = optionalAudioUnits.get();
@@ -92,17 +99,13 @@ public class AudioService {
         return audioUnitList;
     }
 
-    public Optional<Track> findTrackByAudioUnit(AudioUnit audioUnit) {
-//        List<Track> trackList = new ArrayList<>();
-        Track track;
-        Optional<Track> optionalTrack = trackRepository.findByAudioUnit(audioUnit);
-//        if(optionalTrack.isPresent()) {
-//            track = optionalTrack.get();
-//        } else {
-//            throw new NullPointerException();
-//        }
-        return optionalTrack;
-    }
+//    public Optional<Track> findTrackByArtist(Artist artist) {
+////        List<Track> trackList = new ArrayList<>();
+//        Track track;
+//        Optional<Track> optionalTrack = trackRepository.findByArtist(artist);
+//
+//        return optionalTrack;
+//    }
 
     public Optional<Sample> findSampleByAudioUnit(AudioUnit audioUnit) {
 //        List<Sample> trackList = new ArrayList<>();
@@ -116,16 +119,16 @@ public class AudioService {
         return optionalSample;
     }
 
-    public List<Track> findTracksByAudioUnit(List<AudioUnit> audioUnitList) {
-        List<Track> trackList = new ArrayList<>();
-        audioUnitList.stream().forEach((audioUnit -> {
-            Optional<Track> optionalTrack = trackRepository.findByAudioUnit(audioUnit);
-            if(optionalTrack.isPresent()) {
-                trackList.add(optionalTrack.get());
-            }
-        }));
-        return trackList;
-    }
+//    public List<Track> findTracksByArtists(List<Artist> artistList) {
+//        List<Track> trackList = new ArrayList<>();
+//        artistList.stream().forEach((artist -> {
+//            Optional<Track> optionalTrack = trackRepository.findByArtist(artist);
+//            if(optionalTrack.isPresent()) {
+//                trackList.add(optionalTrack.get());
+//            }
+//        }));
+//        return trackList;
+//    }
 
     public List<Sample> findSamplesByAudioUnit(List<AudioUnit> audioUnitList) {
         List<Sample> sampleList = new ArrayList<>();
@@ -138,37 +141,37 @@ public class AudioService {
         return sampleList;
     }
 
-    public Page<AudioUnit> findAudioUnitLike(String searchString, Integer pageNo, Integer pageSize, String sortBy) {
-        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
-        Page<AudioUnit> audioUnitPage = audioUnitRepository.findAudioUnitLike(searchString, pageable);
-        return audioUnitPage;
-    }
+//    public Page<AudioUnit> findAudioUnitLike(String searchString, Integer pageNo, Integer pageSize, String sortBy) {
+//        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
+//        Page<AudioUnit> audioUnitPage = audioUnitRepository.findAudioUnitLike(searchString, pageable);
+//        return audioUnitPage;
+//    }
 
-    public Map<String, Object> findTracksLike(String searchString, Integer pageNo, Integer pageSize, String sortBy) {
-        Page<AudioUnit> audioUnitPage = findAudioUnitLike(searchString, pageNo, pageSize, sortBy);
-        Map<String, Object> trackPage = new HashMap<>();
-        if(audioUnitPage.hasContent()) {
-            List<Track> tracks = findTracksByAudioUnit(audioUnitPage.getContent());
-            trackPage.put("tracks", tracks);
-            trackPage.put("currentPage", audioUnitPage.getNumber());
-            trackPage.put("totalItems", audioUnitPage.getTotalElements());
-            trackPage.put("totalPages", audioUnitPage.getTotalPages());
-            return trackPage;
-        } else {
-            return null;
-        }
-    }
+//    public Map<String, Object> findTracksLike(String searchString, Integer pageNo, Integer pageSize, String sortBy) {
+//        Page<AudioUnit> audioUnitPage = findAudioUnitLike(searchString, pageNo, pageSize, sortBy);
+//        Map<String, Object> trackPage = new HashMap<>();
+//        if(audioUnitPage.hasContent()) {
+//            List<Track> tracks = findTracksByAudioUnit(audioUnitPage.getContent());
+//            trackPage.put("tracks", tracks);
+//            trackPage.put("currentPage", audioUnitPage.getNumber());
+//            trackPage.put("totalItems", audioUnitPage.getTotalElements());
+//            trackPage.put("totalPages", audioUnitPage.getTotalPages());
+//            return trackPage;
+//        } else {
+//            return null;
+//        }
+//    }
 
-    public Page<AudioUnit> findSamplesByString(Integer pageNo, Integer pageSize, String sortBy, String searchString) {
-        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
-        Page<AudioUnit> page = audioUnitRepository.findAudioUnitLike(searchString, pageable);
+    public Page<Sample> findSamplesByString(Integer pageNo, Integer pageSize, String sortBy, String searchString) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Page<Sample> page = sampleRepository.findSamplesLike(searchString, pageable);
         return page;
     }
 
     public Page<AudioUnit> filterSamples(SearchFilter searchFilter) {
         Page<AudioUnit> audioUnitPage;
         if(searchFilter.getSearchString().equals("")) {
-            /**/audioUnitPage = audioUnitRepository.filterAudioUnits(searchFilter.getGenres() ,searchFilter.getMoods(),searchFilter.getMinTempo(), searchFilter.getMaxTempo(), searchFilter.getPageable());
+//            audioUnitPage = audioUnitRepository.filterAudioUnits(searchFilter.getGenres() ,searchFilter.getMoods(),searchFilter.getMinTempo(), searchFilter.getMaxTempo(), searchFilter.getPageable());
             audioUnitPage = audioUnitRepository
                     .filterTest1(searchFilter.getSearchString(), searchFilter.getGenres() ,searchFilter.getMoods(),searchFilter.getMinTempo(), searchFilter.getMaxTempo(), searchFilter.getPageable());
         } else {
@@ -179,6 +182,9 @@ public class AudioService {
         return audioUnitPage;
     }
 
+//    public List<Sample> filterSamplesByLicenseType(LicenseType licenseType, List<Sample> sampleList) {
+//        return sampleList.stream().filter(sample -> sample.getAudioUnit().getLicenseType() == licenseType).collect(Collectors.toList());
+//    }
 
 
 

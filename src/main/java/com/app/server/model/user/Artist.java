@@ -17,31 +17,34 @@ public class Artist {
     @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String artistID;
 
-    @Column(name = "lep", updatable = true, nullable = false)
-    private int lep;
+//    @Column(name = "lep", updatable = true, nullable = false)
+//    private int lep;
 
     @Column(name = "creation_date")
     private LocalDateTime creationDate;
 
-    @Column(name="real_first_name")
-    private String realFirstName;
+//    @Column(name="real_first_name")
+//    private String realFirstName;
+//
+//    @Column(name="real_last_name")
+//    private String realLastName;
 
-    @Column(name="real_last_name")
-    private String realLastName;
-
-    @Column(name="birth_date")
-    private LocalDate birthDate;
+//    @Column(name="birth_date")
+//    private LocalDate birthDate;
 
     @OneToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "user_fk")
     private User user;
 
-    public Artist(String realFirstName, String realLastName, LocalDate birthDate, User user) {
-        this.realFirstName = realFirstName;
-        this.realLastName = realLastName;
-        this.birthDate = birthDate;
+    @Column(name="current_artist_alias_id")
+    private String currentArtistAliasID;
+
+    public Artist(User user) {
+//        this.realFirstName = realFirstName;
+//        this.realLastName = realLastName;
+//        this.birthDate = birthDate;
         this.user = user;
-        this.lep = 0;
+//        this.lep = 0;
         this.creationDate = LocalDateTime.now();
     }
 
@@ -73,53 +76,18 @@ public class Artist {
         this.user = user;
     }
 
-    public int getLep() {
-        return lep;
+    public String getCurrentArtistAliasID() {
+        return currentArtistAliasID;
     }
 
-    public void setLep(int lep) {
-        this.lep = lep;
+    public void setCurrentArtistAliasID(String currentArtistAliasID) {
+        this.currentArtistAliasID = currentArtistAliasID;
     }
 
-    public String getRealFirstName() {
-        return realFirstName;
-    }
+    //    public int increaseLep() {
+//        this.lep += 1;
+//        return this.lep;
+//    }
 
-    public void setRealFirstName(String realFirstName) {
-        this.realFirstName = realFirstName;
-    }
 
-    public String getRealLastName() {
-        return realLastName;
-    }
-
-    public void setRealLastName(String realLastName) {
-        this.realLastName = realLastName;
-    }
-
-    public LocalDate getBirthDate() {
-        return birthDate;
-    }
-
-    public void setBirthDate(LocalDate birthDate) {
-        this.birthDate = birthDate;
-    }
-
-    public int increaseLep() {
-        this.lep += 1;
-        return this.lep;
-    }
-
-    @Override
-    public String toString() {
-        return "Artist{" +
-                "artistID='" + artistID + '\'' +
-                ", lep=" + lep +
-                ", creationDate=" + creationDate +
-                ", realFirstName='" + realFirstName + '\'' +
-                ", realLastName='" + realLastName + '\'' +
-                ", birtDate=" + birthDate +
-                ", user=" + user +
-                '}';
-    }
 }

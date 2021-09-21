@@ -1,14 +1,24 @@
 package com.app.server.services.user;
 
 import com.app.server.model.user.Artist;
+import com.app.server.model.user.ArtistAlias;
 import com.app.server.model.user.User;
+import com.app.server.repository.user.ArtistAliasRepository;
 import com.app.server.repository.user.ArtistRepository;
 import com.app.server.repository.user.UserRepository;
+import com.app.server.services.audio.AudioService;
+import com.app.server.services.security.KeycloakService;
+import org.keycloak.adapters.springsecurity.account.SimpleKeycloakAccount;
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
+import org.keycloak.representations.AccessToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -18,6 +28,18 @@ public class UserService {
 
     @Autowired
     private ArtistRepository artistRepository;
+
+    @Autowired
+    private AudioService audioService;
+
+    @Autowired
+    private KeycloakService keycloakService;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private ArtistAliasRepository artistAliasRepository;
 
     public User findAuthenticatedUser(KeycloakAuthenticationToken authenticationToken) {
        String principal = authenticationToken.getAccount().getPrincipal().getName();
@@ -47,6 +69,57 @@ public class UserService {
         }
         return artist;
     }
+
+//    public List<Artist> findArtistsByLicenseType(LicenseType licenseType) {
+//        List<Artist> artistList = artistRepository.findAll();
+//        artistList.stream().filter(artist -> {
+//            List<Sample> samplesList = audioService.findSamplesByArtist(artist);
+//            if(audioService.filterSamplesByLicenseType(licenseType, samplesList).size() > 0) {
+//                return true;
+//            } else {
+//                return false;
+//            }
+//        }).collect(Collectors.toList());
+//        return artistList;
+//    }
+
+    public List<ArtistAlias> findArtistAliasByArtists(List<Artist> artistList) {
+        List<ArtistAlias> artistAliasList = new ArrayList<>();
+                ;
+        artistList.stream().forEach(artist -> {
+            Optional<List<ArtistAlias>> optionalArtistList = artistAliasRepository.findByArtist(artist);
+            if(optionalArtistList.isPresent()) {
+                artistAliasList.addAll(optionalArtistList.get());
+            }
+
+        });
+        return artistAliasList;
+    }
+
+
+    public Artist tryCreateArtist(KeycloakAuthenticationToken authentication) {
+        SimpleKeycloakAccount account = (SimpleKeycloakAccount) authentication.getDetails();
+        AccessToken token = account.getKeycloakSecurityContext().getToken();
+
+        if (!keycloakService.hasArtistRole(account)) {
+            //Assign new Role To User
+            this.keycloakService.addRole(authentication.getPrincipal().toString(), "app-admin");
+        }
+
+        User user = userService.findAuthenticatedUser(authentication);
+        if(user == null) {
+            throw new IllegalStateException("Cannot create Artist because User Account doensnt exist.");
+        }
+
+        Artist artist = userService.findArtist(authentication);
+        if(artist == null) {
+            artist = artistRepository.save(new Artist(user));
+        }
+
+        return artist;
+    }
+
+
 
 
 

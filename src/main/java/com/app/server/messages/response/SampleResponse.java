@@ -1,5 +1,6 @@
 package com.app.server.messages.response;
 
+import com.app.server.enums.LicenseType;
 import com.app.server.model.audio.Sample;
 
 import java.util.List;
@@ -13,18 +14,17 @@ public class SampleResponse {
     private int tempo;
     private Set<String> moods;
     private Set<String> tags;
-    private int lep;
+    private LicenseType licenseType;
     private String artistName;
 
 
     public SampleResponse(Sample sample) {
         this.sampleID = sample.getSampleID();
         this.title = sample.getAudioUnit().getTitle();
-        this.genre = sample.getAudioUnit().getGenre();
-        this.tempo = sample.getAudioUnit().getTempo();
-        this.moods = sample.getAudioUnit().getMoods();
-        this.tags = sample.getAudioUnit().getTags();
-        this.lep = sample.getAudioUnit().getLep();
+        this.genre = sample.getGenre();
+        this.tempo = sample.getTempo();
+        this.moods = sample.getMoods();
+        this.tags = sample.getTags();
         this.artistName = sample.getAudioUnit().getArtistAlias().getArtistName();
     }
 
@@ -76,12 +76,12 @@ public class SampleResponse {
         return tags;
     }
 
-    public int getLep() {
-        return lep;
+    public LicenseType getLicenseType() {
+        return licenseType;
     }
 
-    public void setLep(int lep) {
-        this.lep = lep;
+    public void setLicenseType(LicenseType licenseType) {
+        this.licenseType = licenseType;
     }
 
     public String getArtistName() {

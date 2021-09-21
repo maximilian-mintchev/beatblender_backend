@@ -1,6 +1,7 @@
 package com.app.server.model.license;
 
 
+import com.app.server.enums.LicenseType;
 import com.app.server.model.audio.AudioUnit;
 import com.app.server.model.audio.Sample;
 import com.app.server.model.user.Artist;
@@ -29,8 +30,8 @@ public class BasicLicense {
     @JoinColumn(name = "audio_unit_fk", nullable = false)
     private Sample sample;
 
-    @Column(name = "full_license_price")
-    private int lep;
+//    @Column(name = "full_license_price")
+//    private LicenseType licenseType;
 
     @Column(name = "creation_date")
     private LocalDateTime creationdDate;
@@ -42,7 +43,7 @@ public class BasicLicense {
     public BasicLicense(User downloader, Sample sample) {
         this.downloader = downloader;
         this.sample = sample;
-        this.lep = sample.getAudioUnit().getLep();
+//        this.licenseType = sample.getAudioUnit().getLicenseType();
         creationdDate = LocalDateTime.now();
     }
 
@@ -72,13 +73,7 @@ public class BasicLicense {
         this.sample = sample;
     }
 
-    public int getLep() {
-        return lep;
-    }
 
-    public void setLep(int lep) {
-        this.lep = lep;
-    }
 
     public LocalDateTime getCreationdDate() {
         return creationdDate;

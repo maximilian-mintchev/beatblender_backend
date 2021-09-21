@@ -3,8 +3,11 @@ package com.app.server.controller.media;
 import com.app.server.exceptions.MyFileNotFoundException;
 import com.app.server.model.audio.Sample;
 import com.app.server.model.license.FullLicense;
+import com.app.server.model.user.Artist;
+import com.app.server.model.user.ArtistAlias;
 import com.app.server.model.user.User;
 import com.app.server.repository.audio.SampleRepository;
+import com.app.server.repository.user.ArtistAliasRepository;
 import com.app.server.services.fileStorage.FileStorageService;
 import com.app.server.services.license.LicenseService;
 import com.app.server.services.user.UserService;
@@ -17,6 +20,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Optional;
 
 @CrossOrigin("*")
@@ -35,6 +40,12 @@ public class ProtectedMediaController {
 
     @Autowired
     LicenseService licenseService;
+
+    @Autowired
+    private ArtistAliasRepository artistAliasRepository;
+
+    Logger logger = LoggerFactory.getLogger(PublicMediaController.class);
+
 
     /*@GetMapping("/download-basic-license-file/{id}")
     @ResponseBody
@@ -75,25 +86,60 @@ public class ProtectedMediaController {
                 .body(file);
     }
 
-    @GetMapping("get-full-license-file/{fullLicenseID}")
+//    @GetMapping("get-full-license-file/{fullLicenseID}")
+//    @ResponseBody
+//    public ResponseEntity<Resource> getBasicLicense(
+//            @PathVariable("fullLicenseID") String fullLicenseID,
+//            KeycloakAuthenticationToken authentication
+//    ) {
+//        User authUser = userService.findAuthenticatedUser(authentication);
+//        FullLicense fullLicense = licenseService.findFullLicenseByID(fullLicenseID);
+//
+//
+//        Resource file;
+//        try {
+//            file = fileStorageService.loadFullLicenseAsResource(fullLicense, authUser);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            throw new MyFileNotFoundException("Wasn't able to retrieve full license", e);
+//        }
+//
+//        return ResponseEntity.ok()
+//                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"")
+//                .body(file);
+//    }
+
+    @GetMapping("/artist-image/{artistAliasID}")
     @ResponseBody
-    public ResponseEntity<Resource> getBasicLicense(
-            @PathVariable("fullLicenseID") String fullLicenseID,
-            KeycloakAuthenticationToken authentication
+    public ResponseEntity<Resource> loadArtistImage(
+            @PathVariable("artistAliasID") String artistAliasID
+//            KeycloakAuthenticationToken authentication
     ) {
-        User authUser = userService.findAuthenticatedUser(authentication);
-        FullLicense fullLicense = licenseService.findFullLicenseByID(fullLicenseID);
+//        Artist artist = userService.findArtist(authentication);
 
-
-        Resource file;
+        Resource file = null;
+        System.out.println("download request");
+//        Optional<AudioUnit> optionalAudioUnit = audioUnitRepository.findById(audioUnitID);
+//        if (optionalAudioUnit.isEmpty()) {
+//            return ResponseEntity.notFound().build();
+//        }
+//        AudioUnit audioUnit = optionalAudioUnit.get();
+            Optional<ArtistAlias> optionalArtistAlias = artistAliasRepository.findById(artistAliasID);
+            ArtistAlias artistAlias;
+            if(optionalArtistAlias.isPresent()) {
+                artistAlias = optionalArtistAlias.get();
+            } else {
+                throw new NullPointerException("Artist Alias is null");
+            }
         try {
-            file = fileStorageService.loadFullLicenseAsResource(fullLicense, authUser);
-//            file = fileStorageService.loadBasicLicenseAsResource(downloaderID, sampleID);
+            Path targetPath = Paths.get(artistAlias.getArtist().getUser().getUuid(), "profile", artistAliasID);
+
+            file = fileStorageService.loadFileAsResource(targetPath, artistAlias.getArtistImageFileName());
+//            audioUnit.getImageFileName(), audioUnit.getArtistAlias().getArtist().getUser().getUuid()
         } catch (Exception e) {
             e.printStackTrace();
-            throw new MyFileNotFoundException("Wasn't able to retrieve full license", e);
+            logger.error("SamplePoolRestAPI: Resource not Found");
         }
-
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"")
                 .body(file);

@@ -3,6 +3,8 @@ package com.app.server.services.fileStorage;
 import com.app.server.exceptions.FileStorageException;
 import com.app.server.exceptions.MyFileNotFoundException;
 import com.app.server.model.license.FullLicense;
+import com.app.server.model.user.Artist;
+import com.app.server.model.user.ArtistAlias;
 import com.app.server.model.user.User;
 import com.app.server.property.FileStorageProperties;
 import com.app.server.repository.user.UserRepository;
@@ -18,10 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 import java.util.Base64;
 
 @Service
@@ -68,9 +67,97 @@ public class FileStorageService {
         }
     }
 
-    public Resource loadFileAsResource(String fileName, String userName) throws Exception {
+    public String storeArtistImageFile(MultipartFile file, User user, Artist artist) {
+        // Normalize file name
+        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+
+        try {
+            // Check if the file's name contains invalid characters
+            if (fileName.contains("..")) {
+                throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileName);
+            }
+
+
+            createUserDirectory(user.getUuid());
+            createAccountSettingsDirectory(user.getUuid(), artist);
+            // Copy file to the target location (Replacing existing file with the same name)
+            Path targetProfileLocation = Paths.get(String.valueOf(this.fileStorageLocation), user.getUuid(), "profile");
+//            Path targetHistoryProfileLocation = Paths.get(String.valueOf(this.fileStorageLocation), user.getUuid(), "profile", "history");
+            Path targetUserLocation = targetProfileLocation.resolve(artist.getCurrentArtistAliasID());
+//            Paths.get(String.valueOf(this.fileStorageLocation), user.getUuid(), "profile", artistName);
+            Path targetLocation = targetUserLocation.resolve(fileName);
+            if(!isDirEmpty(targetProfileLocation)) {
+                FileUtils.cleanDirectory(new File(targetUserLocation.toString()));
+//                Files.move(targetProfileLocation.resolve(artist.getCurrentArtistAlias().getArtistImageFileName()), targetHistoryProfileLocation.resolve(artist.getCurrentArtistAlias().getArtistImageFileName()), StandardCopyOption.REPLACE_EXISTING);
+            }
+
+
+            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+            return fileName;
+        } catch (IOException ex) {
+            throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);
+        }
+    }
+
+    public String storeTrackAudioFile(MultipartFile file, Artist artist) {
+        // Normalize file name
+        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+
+        try {
+            // Check if the file's name contains invalid characters
+            if (fileName.contains("..")) {
+                throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileName);
+            }
+
+
+            createUserDirectory(artist.getUser().getUuid());
+            createTrackAudioFileDirectory(artist.getUser().getUuid());
+            // Copy file to the target location (Replacing existing file with the same name)
+            Path targetTrackLocation = Paths.get(String.valueOf(this.fileStorageLocation), artist.getUser().getUuid(), "track", "audio");
+//            Path targetUserLocation = targetProfileLocation.resolve(artist.getCurrentArtistAliasID());
+            Path targetLocation = targetTrackLocation.resolve(fileName);
+            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+            return fileName;
+        } catch (IOException ex) {
+            throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);
+        }
+    }
+
+    public String storeTrackImageFile(MultipartFile file, Artist artist) {
+        // Normalize file name
+        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+
+        try {
+            // Check if the file's name contains invalid characters
+            if (fileName.contains("..")) {
+                throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileName);
+            }
+
+
+            createUserDirectory(artist.getUser().getUuid());
+            createTrackImageFileDirectory(artist.getUser().getUuid());
+            // Copy file to the target location (Replacing existing file with the same name)
+            Path targetTrackLocation = Paths.get(String.valueOf(this.fileStorageLocation), artist.getUser().getUuid(), "track", "image");
+//            Path targetUserLocation = targetProfileLocation.resolve(artist.getCurrentArtistAliasID());
+            Path targetLocation = targetTrackLocation.resolve(fileName);
+            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+            return fileName;
+        } catch (IOException ex) {
+            throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);
+        }
+    }
+
+
+    private static boolean isDirEmpty(final Path directory) throws IOException {
+        try(DirectoryStream<Path> dirStream = Files.newDirectoryStream(directory)) {
+            return !dirStream.iterator().hasNext();
+        }
+    }
+//    String fileName, String userName
+    public Resource loadFileAsResource(Path targetPath, String fileName) throws Exception {
 //        try {
-        Path target = Paths.get(String.valueOf(this.fileStorageLocation), userName);
+//        Path target = Paths.get(String.valueOf(this.fileStorageLocation), userName);
+        Path target = createPath(targetPath);
         Path filePath = target.resolve(fileName).normalize();
         Resource resource = new UrlResource(filePath.toUri());
         if (resource.exists()) {
@@ -84,6 +171,11 @@ public class FileStorageService {
         } catch (IOException e) {
             e.printStackTrace();
         }*/
+    }
+
+    public Path createPath(Path filePath) {
+        Path target = Paths.get(String.valueOf(this.fileStorageLocation), String.valueOf(filePath));
+        return target;
     }
 
     public Resource loadBasicLicenseAsResource(String downloaderID, String sampleID) throws Exception {
@@ -106,25 +198,20 @@ public class FileStorageService {
 
     }
 
-    public Resource loadFullLicenseAsResource(FullLicense fullLicense, User authUser) throws Exception {
-//        Optional<User> optDownloader = userRepository.findById(downloaderID);
-//        User downloader;
-        Path target;
-//        if(optDownloader.isPresent()) {
-//        downloader = optDownloader.get();
-//        target = Paths.get(String.valueOf(this.fileStorageLocation), downloader.getBasicUserName(), "basicLicenses", String.valueOf(sampleID) + ".pdf").normalize();
-        target = Paths.get(String.valueOf(this.fileStorageLocation), fullLicense.getTrack().getAudioUnit().getCreator().getUser().getUuid(), "fullLicenses", fullLicense.getTrack().getTrackID() + ".pdf").normalize();
-        Resource resource = new UrlResource(target.toUri());
-        if (resource.exists()) {
-            return resource;
-        } else {
-            throw new MyFileNotFoundException("URL PATH couldnt be downloaded: " + target);
-        }
+//    public Resource loadFullLicenseAsResource(FullLicense fullLicense, User authUser) throws Exception {
+//
+//        Path target;
+//
+//        target = Paths.get(String.valueOf(this.fileStorageLocation), fullLicense.getTrack().getAudioUnit().getCreator().getUser().getUuid(), "fullLicenses", fullLicense.getTrack().getTrackID() + ".pdf").normalize();
+//        Resource resource = new UrlResource(target.toUri());
+//        if (resource.exists()) {
+//            return resource;
 //        } else {
-//            throw  new FileNotFoundException("Error happend while Basic License Download");
+//            throw new MyFileNotFoundException("URL PATH couldnt be downloaded: " + target);
 //        }
-
-    }
+//
+//
+//    }
 
 
     public String loadFileAsEncodedString(String fileName) {
@@ -153,6 +240,42 @@ public class FileStorageService {
         }
 
         return userDirectory;
+    }
+
+    public Path createAccountSettingsDirectory(String userName, Artist artist) {
+        Path userDirectory;
+        try {
+            userDirectory = Files.createDirectories(Paths.get(String.valueOf(this.fileStorageLocation), userName, "profile", artist.getCurrentArtistAliasID()));
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new FileStorageException("Could not create the directory where the uploaded files will be stored.", e);
+        }
+
+        return userDirectory;
+    }
+
+    public Path createTrackAudioFileDirectory(String userName) {
+        Path trackDirectory;
+        try {
+            trackDirectory = Files.createDirectories(Paths.get(String.valueOf(this.fileStorageLocation), userName, "track", "audio"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new FileStorageException("Could not create the directory where the uploaded files will be stored.", e);
+        }
+
+        return trackDirectory;
+    }
+
+    public Path createTrackImageFileDirectory(String userName) {
+        Path trackDirectory;
+        try {
+            trackDirectory = Files.createDirectories(Paths.get(String.valueOf(this.fileStorageLocation), userName, "track", "image"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new FileStorageException("Could not create the directory where the uploaded files will be stored.", e);
+        }
+
+        return trackDirectory;
     }
 
 //    public void storeAudioFile(MultipartFile audioFile, UUID id) {

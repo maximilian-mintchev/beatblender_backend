@@ -19,8 +19,9 @@ import java.util.Optional;
 public interface AudioUnitBaseRepository<T extends AudioUnit> extends CrudRepository<T, String> {
 //    , artist_alias al WHERE au.audio_unit_id = al.artist_alias_id AND al.name LIKE %:searchString% OR au.title LIKE %:searchString%
 //AND al.artistName LIKE %:searchString% OR au.title LIKE %:searchString%
-    @Query("SELECT au FROM #{#entityName} au, ArtistAlias al WHERE au.artistAlias = al AND al.artistName LIKE %:searchString% OR au.title LIKE %:searchString%")     // 2. Spring JPA In cause using @Query
-    Optional<List<T>> findAudioUnitLike(@Param("searchString") String searchString);
+
+//    @Query("SELECT au FROM #{#entityName} au, ArtistAlias al WHERE au.artistAlias = al AND al.artistName LIKE %:searchString% OR au.title LIKE %:searchString%")     // 2. Spring JPA In cause using @Query
+//    Optional<List<T>> findAudioUnitLike(@Param("searchString") String searchString);
 
 
 //    AudioUnit findOne(String id);
