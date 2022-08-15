@@ -226,8 +226,12 @@ public class ProtectedAudioController {
             throw new NullPointerException("ArtistAlias does not exist");
         }
 
-        String audioFileName = fileStorageService.storeTrackAudioFile(audioFile, artist);
-        String imageFileName = fileStorageService.storeTrackImageFile(sampleImage, artist);
+//        String audioFileName = fileStorageService.storeTrackAudioFile(audioFile, artist);
+  //      String imageFileName = fileStorageService.storeTrackImageFile(sampleImage, artist);
+
+        String audioFileName = fileStorageService.storeFile(audioFile, artist.getUser());
+        String imageFileName = fileStorageService.storeFile(sampleImage, artist.getUser());
+
 
         AudioUnit audioUnit = audioUnitRepository.save(
                 new AudioUnit(
@@ -350,7 +354,7 @@ public class ProtectedAudioController {
         Path userDataPath;
 
         optUser = userRepository.findById(principal);
-        if (optUser.isEmpty()) {
+        if (!optUser.isPresent()) {
             //Retrieve email from Token with token.getEmail()
             authenticatedUser = userRepository.save(new User(principal, email));
             userDataPath = fileStorageService.createUserDirectory(authenticatedUser.getUuid());

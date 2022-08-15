@@ -133,7 +133,7 @@ public class ProtectedMediaController {
             }
         try {
             Path targetPath = Paths.get(artistAlias.getArtist().getUser().getUuid(), "profile", artistAliasID);
-
+            logger.info("Path:" + targetPath.toString());
             file = fileStorageService.loadFileAsResource(targetPath, artistAlias.getArtistImageFileName());
 //            audioUnit.getImageFileName(), audioUnit.getArtistAlias().getArtist().getUser().getUuid()
         } catch (Exception e) {

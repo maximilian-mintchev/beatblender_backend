@@ -40,6 +40,7 @@ public class PDFService {
 //            todo vertragsfelder anpassen; echter Name whs erforderlich.
 //            PDDocument pDDocument = PDDocument.load(new File("/home/mintch/AppDokumente/Templates/template1.pdf"));
 //            PDDocument pDDocument = PDDocument.load(new File(String.valueOf(Paths.get(String.valueOf(this.fileStorageLocation), "AppDokumente","Templates", "template1.pdf"))));
+            System.out.println(this.basicLicenseTemplateDir);
             PDDocument pDDocument = PDDocument.load(new File(String.valueOf(this.basicLicenseTemplateDir)));
             PDAcroForm pDAcroForm = pDDocument.getDocumentCatalog().getAcroForm();
             PDField field = pDAcroForm.getField("txt1");
@@ -49,10 +50,8 @@ public class PDFService {
             PDField field2 = pDAcroForm.getField("txt3");
             field2.setValue(sample.getAudioUnit().getTitle());
 
-//            licensePathLocation = Paths.get(String.valueOf(this.fileStorageLocation), downloader.getBasicUserName(), "basicLicenses");
             licensePathLocation = Paths.get(String.valueOf(this.fileStorageLocation), downloader.getUuid(), "basicLicenses");
 
-//            Path basicLicensePath = Paths.get(String.valueOf(this.fileStorageLocation), downloader.getBasicUserName(), "basicLicenses", String.valueOf(sample.getId()));
 
             basicLicensePath = licensePathLocation.resolve(sample.getAudioUnit().getAudioUnitID().toString());
             if (!Files.exists(basicLicensePath) && !Files.exists((licensePathLocation))) {

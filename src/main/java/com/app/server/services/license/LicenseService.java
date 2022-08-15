@@ -105,7 +105,7 @@ public class LicenseService {
 //    }
 
     public List<Track> findUnextendedTracks(List<Track> trackList) {
-        return trackList.stream().filter((track -> fullLicenseRepository.findByTrack(track).isEmpty())).collect(Collectors.toList());
+        return trackList.stream().filter((track -> fullLicenseRepository.findByTrack(track).isPresent() == false)).collect(Collectors.toList());
     }
 
     public List<Track> findExtendedTracks(List<Track> trackList) {

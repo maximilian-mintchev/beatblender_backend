@@ -159,6 +159,7 @@ public class FileStorageService {
 //        Path target = Paths.get(String.valueOf(this.fileStorageLocation), userName);
         Path target = createPath(targetPath);
         Path filePath = target.resolve(fileName).normalize();
+        System.out.println(filePath.toUri().toString());
         Resource resource = new UrlResource(filePath.toUri());
         if (resource.exists()) {
             return resource;

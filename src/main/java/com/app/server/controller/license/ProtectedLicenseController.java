@@ -189,7 +189,7 @@ public class ProtectedLicenseController {
         Optional<BasicLicense> basicLicenseOptional = basicLicenseRepository.findByDownloaderAndSample(downloaderUser, sample);
         if (basicLicenseOptional.isEmpty()) {
 //            uploaderArtist.increaseLep();
-            pdfService.createBasicLicensePDF(uploaderArtist, downloaderUser, sample);
+            //pdfService.createBasicLicensePDF(uploaderArtist, downloaderUser, sample);
             basicLicense = basicLicenseRepository.save(new BasicLicense(
                     downloaderUser, sample
             ));

@@ -49,7 +49,7 @@ public class UserService {
 //        String downloaderID = "a9d1a4dd-83fd-4d22-88db-9a6dbe48628a";
         Optional<User> optUser = userRepository.findById(principal);
         User user;
-        if(optUser.isEmpty()) {
+        if(!optUser.isPresent()) {
             throw new NullPointerException("User not found.");
         } else {
             user = optUser.get();
@@ -62,7 +62,7 @@ public class UserService {
         Optional<Artist> optArtist;
         Artist artist;
         optArtist = artistRepository.findByUser(user);
-        if (optArtist.isEmpty()) {
+        if (!optArtist.isPresent()) {
             throw new NullPointerException("Downloader User is null");
         } else {
             artist = optArtist.get();
