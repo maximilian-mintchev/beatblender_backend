@@ -35,7 +35,7 @@ import java.util.Collections;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(jsr250Enabled = true)
-public class ResourceServerConfig extends KeycloakWebSecurityConfigurerAdapter {
+public class ResourceServerConfig  {
 
 
     Logger logger = LoggerFactory.getLogger(ResourceServerConfig.class);
@@ -43,7 +43,7 @@ public class ResourceServerConfig extends KeycloakWebSecurityConfigurerAdapter {
     //set User to 'realm-admin' in realm-management client
     // backend-client needs to allow "Direct Access Grants: Resource Owner Password Credentials Grant"
 
-    @Bean
+    /*@Bean
     public Keycloak keycloak(
             KeycloakSpringBootProperties props,
             RealmProperties realmProperties
@@ -60,9 +60,9 @@ public class ResourceServerConfig extends KeycloakWebSecurityConfigurerAdapter {
                 .resteasyClient(new ResteasyClientBuilder().connectionPoolSize(10).build())
                 .build();
         return keycloak;
-    }
+    } */
 
-    @Bean
+    /*@Bean
     public FilterRegistrationBean<CorsFilter> simpleCorsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
@@ -77,7 +77,7 @@ public class ResourceServerConfig extends KeycloakWebSecurityConfigurerAdapter {
         FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<>(new CorsFilter(source));
         bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
         return bean;
-    }
+    }*/
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -88,7 +88,7 @@ public class ResourceServerConfig extends KeycloakWebSecurityConfigurerAdapter {
 //        http.cors().disable();
     }
 
-    @Autowired
+    /* @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         KeycloakAuthenticationProvider keycloakAuthenticationProvider = keycloakAuthenticationProvider();
         keycloakAuthenticationProvider.setGrantedAuthoritiesMapper(new SimpleAuthorityMapper());
@@ -107,11 +107,15 @@ public class ResourceServerConfig extends KeycloakWebSecurityConfigurerAdapter {
         return new KeycloakSpringBootConfigResolver();
     }
 
-    /**
+    /*
      * Ensures the correct registration of KeycloakSpringBootConfigResolver when Keycloaks AutoConfiguration
      * is explicitly turned off in application.yml {@code keycloak.enabled: false}.
      */
-    @Configuration
+
+
+    /*@Configuration
     static class CustomKeycloakBaseSpringBootConfiguration extends KeycloakBaseSpringBootConfiguration {
-    }
+    }  */
+
+
 }
