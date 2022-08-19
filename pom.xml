@@ -181,6 +181,13 @@
 			<artifactId>resteasy-jaxrs</artifactId>
 			<version>3.6.3.Final</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk -->
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk</artifactId>
+			<version>1.12.277</version>
+		</dependency>
+
 
 
 

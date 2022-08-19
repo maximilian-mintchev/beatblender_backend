@@ -229,8 +229,10 @@ public class ProtectedAudioController {
 //        String audioFileName = fileStorageService.storeTrackAudioFile(audioFile, artist);
   //      String imageFileName = fileStorageService.storeTrackImageFile(sampleImage, artist);
 
-        String audioFileName = fileStorageService.storeFile(audioFile, artist.getUser());
-        String imageFileName = fileStorageService.storeFile(sampleImage, artist.getUser());
+//        String audioFileName = fileStorageService.storeFile(audioFile, artist.getUser());
+  //      String imageFileName = fileStorageService.storeFile(sampleImage, artist.getUser());
+        String audioFileName = fileStorageService.uploadFile(audioFile);
+        String imageFileName = fileStorageService.uploadFile(sampleImage);
 
 
         AudioUnit audioUnit = audioUnitRepository.save(
@@ -357,7 +359,7 @@ public class ProtectedAudioController {
         if (!optUser.isPresent()) {
             //Retrieve email from Token with token.getEmail()
             authenticatedUser = userRepository.save(new User(principal, email));
-            userDataPath = fileStorageService.createUserDirectory(authenticatedUser.getUuid());
+            //userDataPath = fileStorageService.createUserDirectory(authenticatedUser.getUuid());
         } else {
             authenticatedUser = optUser.get();
         }
@@ -386,10 +388,14 @@ public class ProtectedAudioController {
             throw new NullPointerException("No Artist Alias found");
         }
 
-        // Store Sample Image and File
-        //Retrieve email from Token with token.getEmail()
-        String audioFileName = fileStorageService.storeFile(audioFile, authenticatedUser);
-        String imageFileName = fileStorageService.storeFile(sampleImage, authenticatedUser);
+
+        //String audioFileName = fileStorageService.storeFile(audioFile, authenticatedUser);
+        //String imageFileName = fileStorageService.storeFile(sampleImage, authenticatedUser);
+
+        String audioFileName = fileStorageService.uploadFile(audioFile);
+        String imageFileName = fileStorageService.uploadFile(sampleImage);
+
+
         AudioUnit audioUnit;
 //        Optional<AudioUnit> optionalAudioUnit = audioUnitRepository.findByArtistAlias(artistAlias);
 

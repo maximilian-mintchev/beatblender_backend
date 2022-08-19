@@ -169,7 +169,7 @@ public class UtilityService {
                     artistAlias = artistAliasRepository.save(new ArtistAlias(
                             artistNames.get(i.get()),
                             artist,
-                            "typ.jpg"
+                            "1660640364855_pexels-christina-morillo-1181424.jpg"
                     ));
                 }
                 artist.setCurrentArtistAliasID(artistAlias.getArtistALiasID());
@@ -182,8 +182,8 @@ public class UtilityService {
 //                                    artist,
                                 artistAlias,
                                 sampleTitles.get(i.get()),
-                                "s8.mp3",
-                                "typ.jpg"
+                                "1660640242701_s8.mp3",
+                                "1660640364855_pexels-christina-morillo-1181424.jpg"
                         )
                 );
                 sampleRepository.save(new Sample(

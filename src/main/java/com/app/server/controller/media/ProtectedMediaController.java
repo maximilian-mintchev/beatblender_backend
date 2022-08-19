@@ -15,6 +15,7 @@ import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -131,18 +132,24 @@ public class ProtectedMediaController {
             } else {
                 throw new NullPointerException("Artist Alias is null");
             }
-        try {
-            Path targetPath = Paths.get(artistAlias.getArtist().getUser().getUuid(), "profile", artistAliasID);
-            logger.info("Path:" + targetPath.toString());
-            file = fileStorageService.loadFileAsResource(targetPath, artistAlias.getArtistImageFileName());
+
+            //Path targetPath = Paths.get(artistAlias.getArtist().getUser().getUuid(), "profile", artistAliasID);
+            //logger.info("Path:" + targetPath.toString());
+//            file = fileStorageService.loadFileAsResource(targetPath, artistAlias.getArtistImageFileName());
+            byte[] data = fileStorageService.downloadFile(artistAlias.getArtistImageFileName());
+            ByteArrayResource resource = new ByteArrayResource(data);
+
+            return ResponseEntity
+                    .ok()
+                    .contentLength(data.length)
+                    .header("Content-type", "application/octet-stream")
+                    .header("Content-disposition", "attachment; filename=\"" + resource.getFilename() + "\"")
+                    .body(resource);
+            //file = fileStorageService.downloadFile(artistAlias.getArtistImageFileName());
+
 //            audioUnit.getImageFileName(), audioUnit.getArtistAlias().getArtist().getUser().getUuid()
-        } catch (Exception e) {
-            e.printStackTrace();
-            logger.error("SamplePoolRestAPI: Resource not Found");
-        }
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"")
-                .body(file);
+
+
     }
 
 

@@ -13,12 +13,14 @@ import com.app.server.repository.user.UserRepository;
 import com.app.server.services.fileStorage.FileStorageService;
 import com.app.server.services.security.KeycloakService;
 import com.app.server.services.user.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.keycloak.adapters.springsecurity.account.SimpleKeycloakAccount;
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
 import org.keycloak.representations.AccessToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
@@ -29,6 +31,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/web/protected/user")
+@Slf4j
 public class ProtectedUserController {
 
     @Autowired
@@ -107,9 +110,10 @@ public class ProtectedUserController {
                 Optional<ArtistAlias> optionalArtistAlias = artistAliasRepository.findById(currentArtistAliasID);
                 if (optionalArtistAlias.isPresent()) {
                     artistAlias = optionalArtistAlias.get();
-                    artistAlias.setArtistImageFileName(artistImage.getOriginalFilename());
+                    String artistImageFileName = fileStorageService.uploadFile(artistImage);
+
+                    artistAlias.setArtistImageFileName(artistImageFileName);
                     artistAliasRepository.save(artistAlias);
-                    fileStorageService.storeArtistImageFile(artistImage, artist.getUser(), artist);
                 } else {
                     throw new NullPointerException("ArtistALias doesn't exist");
                 }
@@ -163,9 +167,12 @@ public class ProtectedUserController {
     @PostMapping("/try-create-user")
     public ResponseEntity<?> tryCreateUser(
 //            @RequestParam("artistName") String artistName,
-            KeycloakAuthenticationToken authentication
-    ) {
+            //KeycloakAuthenticationToken authentication
+            Authentication authentication
 
+
+    ) {
+        System.out.println(authentication);
         SimpleKeycloakAccount account = (SimpleKeycloakAccount) authentication.getDetails();
         AccessToken token = account.getKeycloakSecurityContext().getToken();
 
@@ -180,11 +187,11 @@ public class ProtectedUserController {
         }
 
 
-        User user = userService.findAuthenticatedUser(authentication);
+        /*User user = userService.findAuthenticatedUser(authentication);
         if(user == null) {
             user = userRepository.save(new User(principal, email));
-            fileStorageService.createUserDirectory(user.getUuid());
-        }
+            // fileStorageService.createUserDirectory(user.getUuid());
+        }*/
         return ResponseEntity.ok("Successfull Try");
     }
 

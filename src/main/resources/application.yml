@@ -1,0 +1,16 @@
+cloud:
+  aws:
+    credentials:
+      access-key: AKIAV3BZQH5LRTKJDC4N
+      secret-key: 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
+    region:
+      static:  eu-central-1
+    stack:
+      auto: false
+
+application:
+  bucket:
+    name: beatblender-storage
+
+
+

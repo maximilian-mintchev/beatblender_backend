@@ -1,5 +1,10 @@
 package com.app.server.services.fileStorage;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import com.amazonaws.util.IOUtils;
 import com.app.server.exceptions.FileStorageException;
 import com.app.server.exceptions.MyFileNotFoundException;
 import com.app.server.model.license.FullLicense;
@@ -8,10 +13,12 @@ import com.app.server.model.user.ArtistAlias;
 import com.app.server.model.user.User;
 import com.app.server.property.FileStorageProperties;
 import com.app.server.repository.user.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -19,16 +26,24 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.Base64;
 
 @Service
+@Slf4j
 public class FileStorageService {
 
     private final Path fileStorageLocation;
 
     Logger logger = LoggerFactory.getLogger(FileStorageService.class);
+
+    @Value("${application.bucket.name}")
+    private String bucketName;
+
+    @Autowired
+    private AmazonS3 s3Client;
 
     @Autowired
     public FileStorageService(FileStorageProperties fileStorageProperties) {
@@ -279,7 +294,43 @@ public class FileStorageService {
         return trackDirectory;
     }
 
-//    public void storeAudioFile(MultipartFile audioFile, UUID id) {
-//        storeFile(audioFile, id.toString());
-//    }
+    public String uploadFile(MultipartFile file) {
+        File fileObj = convertMultiPartFileToFile(file);
+        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+        s3Client.putObject(new PutObjectRequest(bucketName, fileName, fileObj));
+        fileObj.delete();
+        return fileName;
+    }
+
+
+    public byte[] downloadFile(String fileName) {
+        S3Object s3Object = s3Client.getObject(bucketName, fileName);
+        S3ObjectInputStream inputStream = s3Object.getObjectContent();
+        try {
+
+            byte[] content = IOUtils.toByteArray(inputStream);
+
+            return content;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    public String deleteFile(String fileName) {
+        s3Client.deleteObject(bucketName, fileName);
+        return fileName + " removed ...";
+    }
+
+
+    private File convertMultiPartFileToFile(MultipartFile file) {
+        File convertedFile = new File(file.getOriginalFilename());
+        try (FileOutputStream fos = new FileOutputStream(convertedFile)) {
+            fos.write(file.getBytes());
+        } catch (IOException e) {
+            log.error("Error converting multipartFile to file", e);
+        }
+        return convertedFile;
+    }
 }
