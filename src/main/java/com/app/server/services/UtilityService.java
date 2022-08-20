@@ -16,6 +16,7 @@ import com.app.server.repository.user.ArtistAliasRepository;
 import com.app.server.repository.user.ArtistRepository;
 import com.app.server.repository.user.UserRepository;
 import com.app.server.services.security.KeycloakService;
+import com.sun.xml.bind.v2.TODO;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
@@ -86,7 +87,9 @@ public class UtilityService {
 
 
     public void populateDataBase() {
-        List<UserRepresentation> userList = keycloakService.getAllUsers();
+        // TODO: 19.08.2022 Alle vorhandenen User aus der Datenbasis ziehen
+        //keycloakService.getAllUsers()
+        List<UserRepresentation> userList = new ArrayList<>();;
         List<User> users = new ArrayList<>();
         List<Artist> artists = new ArrayList<>();
         List<ArtistAlias> artistAliases = new ArrayList<>();
@@ -144,16 +147,18 @@ public class UtilityService {
             }
 //            userRepresentation.getClientRoles();
 
-
-            keycloakService.getRealmRoles(userRepresentation.getId()).stream().forEach(s -> {
+            // TODO: 19.08.2022 ersetzen
+            /* keycloakService.getRealmRoles(userRepresentation.getId()).stream().forEach(s -> {
                 logger.info(s);
-            });
+            }); */
+
+
 //            List<String> ur = userRepresentation.getRealmRoles();
 //            String role = keycloakService.getArtistRole();
 
 //            logger.info(ur)
-            if (keycloakService.getRealmRoles(userRepresentation.getId()).contains(keycloakService.getArtistRole())) {
-//                userRepository.delete(user);
+            // TODO: 19.08.2022 ersetzen
+            //if (keycloakService.getRealmRoles(userRepresentation.getId()).contains(keycloakService.getArtistRole())) {
                 Artist artist;
                 Optional<Artist> optionalArtist = artistRepository.findByUser(user);
                 if (optionalArtist.isPresent()) {
@@ -220,7 +225,7 @@ public class UtilityService {
 //                        artistAlias
 //                ));
 
-            }
+            //}
             i.getAndIncrement();
         });
     }

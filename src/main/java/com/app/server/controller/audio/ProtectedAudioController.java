@@ -208,10 +208,15 @@ public class ProtectedAudioController {
         SimpleKeycloakAccount account = (SimpleKeycloakAccount) authentication.getDetails();
         AccessToken token = account.getKeycloakSecurityContext().getToken();
 
-        if (!keycloakService.hasArtistRole(account)) {
+        // TODO: 19.08.2022 Rollencheck einfügen
+
+        /* if (!keycloakService.hasArtistRole(account)) {
             //Assign new Role To User
             this.keycloakService.addRole(authentication.getPrincipal().toString(), "app-admin");
-        }
+        } */
+
+
+
         Artist artist = userService.findArtist(authentication);
         User authenticatedUser = userService.findAuthenticatedUser(authentication);
         if (artist.equals(null)) {
@@ -329,10 +334,12 @@ public class ProtectedAudioController {
 //        });
 //        logger.info(token.getEmail());
 //        logger.info("upload success");
-        if (!keycloakService.hasArtistRole(account)) {
+
+        // TODO: 19.08.2022 Rollencheck einfügen
+        /* if (!keycloakService.hasArtistRole(account)) {
             //Assign new Role To User
             this.keycloakService.addRole(authentication.getPrincipal().toString(), "app-admin");
-        }
+        } */
 
         //Mock authenticated user instead of using a token
 //        String principal = "046fcc75-58c4-4492-b9bb-5b84a396e760";

@@ -8,6 +8,7 @@ import com.app.server.repository.user.ArtistRepository;
 import com.app.server.repository.user.UserRepository;
 import com.app.server.services.audio.AudioService;
 import com.app.server.services.security.KeycloakService;
+import com.sun.xml.bind.v2.TODO;
 import org.keycloak.adapters.springsecurity.account.SimpleKeycloakAccount;
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
 import org.keycloak.representations.AccessToken;
@@ -101,10 +102,12 @@ public class UserService {
         SimpleKeycloakAccount account = (SimpleKeycloakAccount) authentication.getDetails();
         AccessToken token = account.getKeycloakSecurityContext().getToken();
 
-        if (!keycloakService.hasArtistRole(account)) {
+
+        // TODO: 19.08.2022 Rollencheck einfügen
+        /* if (!keycloakService.hasArtistRole(account)) {
             //Assign new Role To User
             this.keycloakService.addRole(authentication.getPrincipal().toString(), "app-admin");
-        }
+        } */
 
         User user = userService.findAuthenticatedUser(authentication);
         if(user == null) {

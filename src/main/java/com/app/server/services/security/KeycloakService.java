@@ -25,7 +25,7 @@ import java.util.UUID;
 @Service
 public class KeycloakService {
 
-    private RealmProperties realmProperties;
+   /* private RealmProperties realmProperties;
     private RealmResource realmResource;
 
     Logger logger = LoggerFactory.getLogger(KeycloakService.class);
@@ -87,6 +87,9 @@ public class KeycloakService {
         });
         return realmRoles;
     }
+
+
+    */
 
 
 
