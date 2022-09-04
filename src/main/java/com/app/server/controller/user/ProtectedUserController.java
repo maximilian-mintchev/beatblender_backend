@@ -178,7 +178,7 @@ public class ProtectedUserController {
 
         String principal = authentication.getPrincipal().toString();
 
-        if (principal.isEmpty()) {
+         if (principal.isEmpty()) {
             throw new NullPointerException("Principal is null");
         }
         String email = token.getEmail();
