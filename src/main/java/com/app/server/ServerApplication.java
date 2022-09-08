@@ -43,7 +43,7 @@ public class ServerApplication {
 
     @Bean
     public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
-//       utilityService.populateDataBase();
+   utilityService.populateDataBase();
 
 
         return args -> {
